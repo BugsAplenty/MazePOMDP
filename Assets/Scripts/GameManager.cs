@@ -2,23 +2,36 @@ using UnityEngine;
 
 public class GameManager : MonoBehaviour
 {
+    public static GameManager Instance { get; private set; }
+
     public GameObject playerPrefab;
+
+    private void Awake()
+    {
+        if (Instance == null)
+        {
+            Instance = this;
+            DontDestroyOnLoad(this.gameObject);
+        }
+        else
+        {
+            Destroy(this.gameObject);
+        }
+    }
 
     void Start()
     {
-        // Call for World Generation
         WorldGenerator.Instance.GenerateWorld();
-
-        // Call for FogOfWar Generation
         FogOfWarController.Instance.SetupOverlay(WorldGenerator.Instance.mainMap);
-
-        // Call for Spawning the Player
         SpawnPlayer();
     }
 
     public void SpawnPlayer()
     {
-        var spawnPosition = WorldGenerator.Instance.GetRandomPosition();
+        var spawnCell = Vector3Int.FloorToInt(WorldGenerator.Instance.GetRandomPosition());
+        var spawnPosition = WorldGenerator.Instance.mainMap.GetCellCenterWorld(spawnCell);
+        Debug.Log("Spawning player at " + spawnPosition);
         Instantiate(playerPrefab, spawnPosition, Quaternion.identity);
     }
+
 }

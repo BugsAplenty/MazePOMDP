@@ -8,18 +8,7 @@ public class WorldGenerator : MonoBehaviour
 
     // Rest of your code
 
-    private void Awake()
-    {
-        if (Instance == null)
-        {
-            Instance = this;
-            DontDestroyOnLoad(gameObject);
-        }
-        else
-        {
-            Destroy(gameObject);
-        }
-    }
+    
     public int width;
     public int height;
     public Tilemap tilemap;
@@ -33,9 +22,36 @@ public class WorldGenerator : MonoBehaviour
     public Tilemap mainMap; // assign in inspector
     public float mainMapHeight; // new variable
     public Tilemap overlayTilemap; // assign in inspector
+    private void Awake()
+    {
+        if (Instance == null)
+        {
+            Instance = this;
+            DontDestroyOnLoad(gameObject);
+        }
+        else
+        {
+            Destroy(gameObject);
+        }
+    }
     private void Start()
     {
         GenerateWorld();
+    }
+    public bool TileIsWall(Vector3Int tilePos)
+    {
+        // Convert from tile position to _dungeon array indices
+        var x = tilePos.x + width / 2;
+        var y = tilePos.y + height / 2;
+
+        // Check if the coordinates are within the bounds of the array
+        if (x >= 0 && x < width && y >= 0 && y < height)
+        {
+            return _dungeon[x, y] == 1;
+        }
+
+        // If the coordinates are outside the array, treat them as a wall
+        return true;
     }
 
     public void GenerateWorld()
