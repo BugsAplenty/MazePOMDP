@@ -45,6 +45,7 @@
     <Analyzer Include="C:\Program Files\Unity\Hub\Editor\2023.1.0f1\Editor\Data\Tools\Unity.SourceGenerators\Unity.Properties.SourceGenerator.dll" />
   </ItemGroup>
   <ItemGroup>
+     <Compile Include="Assets\Scripts\GenerateWorld.cs" />
      <Compile Include="Assets\Scripts\PlayerController.cs" />
      <Compile Include="Assets\BasicTile.cs" />
      <Compile Include="Assets\Scripts\GameManager.cs" />
@@ -54,7 +55,6 @@
      <Folder Include="Assets" />
      <Folder Include="Library\BuildInstructions" />
      <Folder Include="Assets\Scenes" />
-     <Folder Include="Assets\Scripts" />
      <Folder Include="Assets\Materials" />
      <Reference Include="UnityEngine">
      <HintPath>C:\Program Files\Unity\Hub\Editor\2023.1.0f1\Editor\Data\Managed\UnityEngine\UnityEngine.dll</HintPath>
@@ -832,6 +832,7 @@
      </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Content Include="Assets\Scripts\GenerateWorld.cs.meta" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it.

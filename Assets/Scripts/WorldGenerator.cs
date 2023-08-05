@@ -53,6 +53,10 @@ public class WorldGenerator : MonoBehaviour
         // If the coordinates are outside the array, treat them as a wall
         return true;
     }
+    public bool TileIsWalkable(Vector3Int position)
+    {
+        return !TileIsWall(position);
+    }
 
     public void GenerateWorld()
     {

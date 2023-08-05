@@ -61,17 +61,17 @@ public class FogOfWarController : MonoBehaviour
 
     private bool IsBlocked(Vector3Int start, Vector3Int end)
     {
-        var rayDirection = Vector3.Normalize(start - end);
-        var distance = Mathf.CeilToInt(Vector3.Distance(start, end));
-        var currentPos = start;
+        var rayDirection = Vector3.Normalize(end - start);
+        var distance = Vector3Int.Distance(start, end);
+        var currentPos = start + new Vector3Int((int)rayDirection.x, (int)rayDirection.y, (int)rayDirection.z);
 
-        for (var i = 0; i < distance; i++)
+        for (var i = 1; i <= distance; i++)
         {
-            currentPos = currentPos + new Vector3Int((int)rayDirection.x, (int)rayDirection.y, (int)rayDirection.z);
             if (WorldGenerator.Instance.TileIsWall(currentPos))
             {
                 return true;
             }
+            currentPos = start + new Vector3Int((int)(i * rayDirection.x), (int)(i * rayDirection.y), (int)(i * rayDirection.z));
         }
 
         return false;
