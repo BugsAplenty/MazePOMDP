@@ -19,13 +19,10 @@ public class WorldGenerator : MonoBehaviour
     public Tilemap overlayTilemap; // assign in inspector
     private void Start()
     {
-        mainMap.transform.localPosition = new Vector3(0, 0, mainMapHeight);
-        overlayTilemap.transform.localPosition = Vector3.zero;
-        FogOfWarController.Instance.SetupOverlay(mainMap);
         GenerateWorld();
     }
 
-    private void GenerateWorld()
+    public void GenerateWorld()
     {
         _dungeon = new int[width, height];
         _rooms = new List<Rect>();
@@ -202,4 +199,16 @@ public class WorldGenerator : MonoBehaviour
         return newRoom;
     }
 
+    public Vector3 GetRandomPosition()
+    {
+        // Get a random non-wall tile position
+        var x = Random.Range(0, width);
+        var y = Random.Range(0, height);
+        while (_dungeon[x, y] == 1)
+        {
+            x = Random.Range(0, width);
+            y = Random.Range(0, height);
+        }
+        return new Vector3(x - width / 2, y - height / 2, 0);
+    }
 }

@@ -46,6 +46,7 @@
   </ItemGroup>
   <ItemGroup>
      <Compile Include="Assets\Scripts\BasicTile.cs" />
+     <Compile Include="Assets\Scripts\GameManager.cs" />
      <Compile Include="Assets\Scripts\FogOfWarController.cs" />
      <Compile Include="Assets\Scripts\WorldGenerator.cs" />
      <Folder Include="Assets" />

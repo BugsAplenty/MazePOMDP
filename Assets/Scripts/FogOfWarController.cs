@@ -34,17 +34,11 @@ public class FogOfWarController : MonoBehaviour
             for (int y = 0; y < bounds.size.y; y++)
             {
                 Vector3Int pos = new Vector3Int(x + bounds.xMin, y + bounds.yMin, 0);
-                if (allTiles[x + y * bounds.size.x] != null)
-                {
-                    overlayTilemap.SetTile(pos, null);
-                }
-                else
-                {
-                    overlayTilemap.SetTile(pos, darkTile);
-                }
+                overlayTilemap.SetTile(pos, darkTile);  // set dark tile regardless of the main map's tile at this position
             }
         }
     }
+
 
 
     public void ClearTile(Vector3 worldPosition)
