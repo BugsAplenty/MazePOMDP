@@ -4,6 +4,22 @@ using UnityEngine.Tilemaps;
 
 public class WorldGenerator : MonoBehaviour
 {
+    public static WorldGenerator Instance { get; private set; }
+
+    // Rest of your code
+
+    private void Awake()
+    {
+        if (Instance == null)
+        {
+            Instance = this;
+            DontDestroyOnLoad(gameObject);
+        }
+        else
+        {
+            Destroy(gameObject);
+        }
+    }
     public int width;
     public int height;
     public Tilemap tilemap;

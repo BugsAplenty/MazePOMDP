@@ -3,16 +3,14 @@ using UnityEngine;
 public class GameManager : MonoBehaviour
 {
     public GameObject playerPrefab;
-    public WorldGenerator worldGenerator;
-    public FogOfWarController fogOfWarController;
 
     void Start()
     {
         // Call for World Generation
-        worldGenerator.GenerateWorld();
+        WorldGenerator.Instance.GenerateWorld();
 
         // Call for FogOfWar Generation
-        fogOfWarController.SetupOverlay(worldGenerator.mainMap);
+        FogOfWarController.Instance.SetupOverlay(WorldGenerator.Instance.mainMap);
 
         // Call for Spawning the Player
         SpawnPlayer();
@@ -20,7 +18,7 @@ public class GameManager : MonoBehaviour
 
     public void SpawnPlayer()
     {
-        Vector3 spawnPosition = worldGenerator.GetRandomPosition();
+        var spawnPosition = WorldGenerator.Instance.GetRandomPosition();
         Instantiate(playerPrefab, spawnPosition, Quaternion.identity);
     }
 }

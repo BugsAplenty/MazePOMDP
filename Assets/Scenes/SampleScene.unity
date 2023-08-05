@@ -418,6 +418,7 @@ GameObject:
   m_Component:
   - component: {fileID: 887950032}
   - component: {fileID: 887950033}
+  - component: {fileID: 887950035}
   - component: {fileID: 887950034}
   m_Layer: 0
   m_Name: GameObject
@@ -450,6 +451,19 @@ MonoBehaviour:
   m_GameObject: {fileID: 887950030}
   m_Enabled: 1
   m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ec375bc5948612847bd92a3f3ca9a1d6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  playerPrefab: {fileID: 2855186533215250494, guid: 28251f2cd08b3e34cabb49f024b94235, type: 3}
+--- !u!114 &887950034
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 887950030}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 3bebc270e5933a042ab33b0dfd026b38, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
@@ -463,7 +477,7 @@ MonoBehaviour:
   mainMap: {fileID: 863486892}
   mainMapHeight: 0
   overlayTilemap: {fileID: 1802596852}
---- !u!114 &887950034
+--- !u!114 &887950035
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
