@@ -1,6 +1,12 @@
 using UnityEngine;
 using System.Collections.Generic;
 using UnityEngine.Tilemaps;
+public enum TileType 
+{
+    Path,
+    Wall,
+    Darkness
+}
 
 public class WorldGenerator : MonoBehaviour
 {
@@ -22,6 +28,8 @@ public class WorldGenerator : MonoBehaviour
     public Tilemap mainMap; // assign in inspector
     public float mainMapHeight; // new variable
     public Tilemap overlayTilemap; // assign in inspector
+    public TileType[,] Map; // This is the 2D array that represents your game map
+
     private void Awake()
     {
         if (Instance == null)
@@ -36,6 +44,15 @@ public class WorldGenerator : MonoBehaviour
     }
     private void Start()
     {
+        Map = new TileType[height, width];
+        for(var y = 0; y < height; y++)
+        {
+            for(var x = 0; x < width; x++)
+            {
+                // Just setting random tiles for testing
+                Map[y, x] = (TileType)Random.Range(0, 3);
+            }
+        }
         GenerateWorld();
     }
     public bool TileIsWall(Vector3Int tilePos)
@@ -247,4 +264,12 @@ public class WorldGenerator : MonoBehaviour
         }
         return new Vector3(x - width / 2, y - height / 2, 0);
     }
+
+    public TileType GetTileType(TileBase tile)
+    {
+        if (tile == wallTile) return TileType.Wall;
+        if (tile == floorTile) return TileType.Path;
+        return TileType.Darkness;  // or other default
+    }
+
 }

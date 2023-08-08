@@ -2,23 +2,26 @@ using UnityEngine;
 
 public class CameraFollow : MonoBehaviour
 {
-    public Transform playerTransform; // Assign your player's transform here.
-    private bool _isplayerTransformNotNull;
+    public GameObject player;  // reference to your player object
+    private Vector3 _offset;    // offset value for the camera to position relative to the player
+    public new Camera camera;
+    private bool _isPlayerNotNull;
 
-    // Update is called once per frame
     private void Start()
     {
-        _isplayerTransformNotNull = playerTransform != null;
+        _isPlayerNotNull = player != null;
+        _offset = transform.position - player.transform.position;
     }
 
-    void LateUpdate()
+    private void Update()
     {
-        // Check if there is a player
-        if (_isplayerTransformNotNull)
-        {
-            var transform1 = transform;
-            var position = playerTransform.position;
-            transform1.position = new Vector3(position.x, position.y, transform1.position.z);
-        }
+        // Change camera position to follow the player with -10 z value
+        if (!_isPlayerNotNull) return;
+        var position = player.transform.position;
+        camera.transform.position = new Vector3(
+            position.x + _offset.x,
+            position.y + _offset.y, 
+            -10
+            );
     }
 }

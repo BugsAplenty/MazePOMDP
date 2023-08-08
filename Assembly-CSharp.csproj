@@ -45,8 +45,10 @@
     <Analyzer Include="C:\Program Files\Unity\Hub\Editor\2023.1.0f1\Editor\Data\Tools\Unity.SourceGenerators\Unity.Properties.SourceGenerator.dll" />
   </ItemGroup>
   <ItemGroup>
-     <Compile Include="Assets\Scripts\GenerateWorld.cs" />
+     <Compile Include="Assets\Scripts\MiniMapCamera.cs" />
      <Compile Include="Assets\Scripts\PlayerController.cs" />
+     <Compile Include="Assets\Scripts\POMDP.cs" />
+     <Compile Include="Assets\Scripts\SetCameraTarget.cs" />
      <Compile Include="Assets\BasicTile.cs" />
      <Compile Include="Assets\Scripts\GameManager.cs" />
      <Compile Include="Assets\Scripts\CameraFollow.cs" />
@@ -55,6 +57,7 @@
      <Folder Include="Assets" />
      <Folder Include="Library\BuildInstructions" />
      <Folder Include="Assets\Scenes" />
+     <Folder Include="Assets\Scripts" />
      <Folder Include="Assets\Materials" />
      <Reference Include="UnityEngine">
      <HintPath>C:\Program Files\Unity\Hub\Editor\2023.1.0f1\Editor\Data\Managed\UnityEngine\UnityEngine.dll</HintPath>
@@ -701,6 +704,9 @@
      <Reference Include="Unity.2D.Tilemap.Editor">
      <HintPath>C:\Users\misha\MazePOMDP\Library\ScriptAssemblies\Unity.2D.Tilemap.Editor.dll</HintPath>
      </Reference>
+     <Reference Include="com.unity.cinemachine.editor">
+     <HintPath>C:\Users\misha\MazePOMDP\Library\ScriptAssemblies\com.unity.cinemachine.editor.dll</HintPath>
+     </Reference>
      <Reference Include="Unity.2D.Aseprite.Common">
      <HintPath>C:\Users\misha\MazePOMDP\Library\ScriptAssemblies\Unity.2D.Aseprite.Common.dll</HintPath>
      </Reference>
@@ -709,9 +715,6 @@
      </Reference>
      <Reference Include="Unity.Rider.Editor">
      <HintPath>C:\Users\misha\MazePOMDP\Library\ScriptAssemblies\Unity.Rider.Editor.dll</HintPath>
-     </Reference>
-     <Reference Include="Unity.2D.Tilemap.Extras.Editor">
-     <HintPath>C:\Users\misha\MazePOMDP\Library\ScriptAssemblies\Unity.2D.Tilemap.Extras.Editor.dll</HintPath>
      </Reference>
      <Reference Include="PsdPlugin">
      <HintPath>C:\Users\misha\MazePOMDP\Library\ScriptAssemblies\PsdPlugin.dll</HintPath>
@@ -727,6 +730,9 @@
      </Reference>
      <Reference Include="Unity.2D.Common.Path.Editor">
      <HintPath>C:\Users\misha\MazePOMDP\Library\ScriptAssemblies\Unity.2D.Common.Path.Editor.dll</HintPath>
+     </Reference>
+     <Reference Include="Unity.2D.Tilemap.Extras.Editor">
+     <HintPath>C:\Users\misha\MazePOMDP\Library\ScriptAssemblies\Unity.2D.Tilemap.Extras.Editor.dll</HintPath>
      </Reference>
      <Reference Include="Unity.2D.Common.Editor">
      <HintPath>C:\Users\misha\MazePOMDP\Library\ScriptAssemblies\Unity.2D.Common.Editor.dll</HintPath>
@@ -766,6 +772,9 @@
      </Reference>
      <Reference Include="Unity.Mathematics">
      <HintPath>C:\Users\misha\MazePOMDP\Library\ScriptAssemblies\Unity.Mathematics.dll</HintPath>
+     </Reference>
+     <Reference Include="Cinemachine">
+     <HintPath>C:\Users\misha\MazePOMDP\Library\ScriptAssemblies\Cinemachine.dll</HintPath>
      </Reference>
      <Reference Include="Unity.VisualScripting.SettingsProvider.Editor">
      <HintPath>C:\Users\misha\MazePOMDP\Library\ScriptAssemblies\Unity.VisualScripting.SettingsProvider.Editor.dll</HintPath>
@@ -832,7 +841,6 @@
      </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Content Include="Assets\Scripts\GenerateWorld.cs.meta" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it.
