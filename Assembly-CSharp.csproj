@@ -53,6 +53,7 @@
      <Compile Include="Assets\Scripts\GameManager.cs" />
      <Compile Include="Assets\Scripts\CameraFollow.cs" />
      <Compile Include="Assets\Scripts\FogOfWarController.cs" />
+     <Compile Include="Assets\Scripts\CameraManager.cs" />
      <Compile Include="Assets\Scripts\WorldGenerator.cs" />
      <Folder Include="Assets" />
      <Folder Include="Library\BuildInstructions" />

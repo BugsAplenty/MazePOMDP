@@ -26,7 +26,7 @@ public class GameManager : MonoBehaviour
         beliefMap = new int[WorldGenerator.Instance.width, WorldGenerator.Instance.height];
         WorldGenerator.Instance.GenerateWorld();
         FogOfWarController.Instance.SetupOverlay(WorldGenerator.Instance.mainMap);
-        // SpawnPlayer(); 
+        SpawnPlayer(); 
         RandomizePlayerLocation();
     }
 
