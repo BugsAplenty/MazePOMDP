@@ -93,11 +93,25 @@ public class WorldGenerator : MonoBehaviour
         Split(new Rect(0, 0, width, height));
 
         // Carve out corridors between rooms
-        for (var i = 0; i < _rooms.Count - 1; i++)
+        // Carve out corridors between rooms
+        foreach (var roomA in _rooms)
         {
-            var roomA = _rooms[i];
-            var roomB = _rooms[i + 1];
+            Rect? closestRoom = null;
+            var closestDistance = float.MaxValue;
 
+            // find the closest room
+            foreach (var potentialRoom in _rooms)
+            {
+                if (potentialRoom == roomA) continue;
+                var distance = Vector2.Distance(new Vector2(roomA.x + roomA.width / 2, roomA.y + roomA.height / 2),
+                    new Vector2(potentialRoom.x + potentialRoom.width / 2, potentialRoom.y + potentialRoom.height / 2));
+                if (!(distance < closestDistance)) continue;
+                closestDistance = distance;
+                closestRoom = potentialRoom;
+            }
+
+            if (!closestRoom.HasValue) continue;
+            var roomB = closestRoom.Value;
             var roomACenter = new Vector2(roomA.x + roomA.width / 2, roomA.y + roomA.height / 2);
             var roomBCenter = new Vector2(roomB.x + roomB.width / 2, roomB.y + roomB.height / 2);
 
@@ -114,6 +128,7 @@ public class WorldGenerator : MonoBehaviour
                 _dungeon[(int)roomACenter.x, (int)roomACenter.y] = 0;
             }
         }
+
 
         // Render the dungeon on the Tilemap
         for (var x = 0; x < width; x++)
@@ -257,19 +272,27 @@ public class WorldGenerator : MonoBehaviour
         // Get a random non-wall tile position
         var x = Random.Range(0, width);
         var y = Random.Range(0, height);
-        while (_dungeon[x, y] == 1)
+        while (_dungeon[x, y] == 1 || IsSurroundedByWalls(x, y))
         {
             x = Random.Range(0, width);
             y = Random.Range(0, height);
         }
         return new Vector3(x - width / 2, y - height / 2, 0);
     }
-
+    private bool IsSurroundedByWalls(int x, int y)
+    {
+        // Check if the given position is surrounded by walls on all four cardinal directions.
+        return 
+            x > 0 && _dungeon[x-1, y] == 1 && // Check left
+            x < width-1 && _dungeon[x+1, y] == 1 && // Check right
+            y > 0 && _dungeon[x, y-1] == 1 && // Check below
+            y < height-1 && _dungeon[x, y+1] == 1;         // Check above
+    }
+    
     public TileType GetTileType(TileBase tile)
     {
         if (tile == wallTile) return TileType.Wall;
-        if (tile == floorTile) return TileType.Path;
-        return TileType.Darkness;  // or other default
+        return tile == floorTile ? TileType.Path : TileType.Darkness; // or other default
     }
 
 }

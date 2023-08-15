@@ -48,12 +48,12 @@ public class Pomdp : MonoBehaviour
                         // Increase the belief score if the tiles match and are not darkness
                         if (observedTileType == mapTileType && observedTileType != TileType.Darkness)
                         {
-                            gameManager.beliefMap[y, x] += 1;
+                            gameManager.BeliefMap[y, x] += 10;
                         }
                         // If the tiles do not match and neither of them is darkness, decrease the belief score
                         else if (observedTileType != mapTileType && observedTileType != TileType.Darkness && mapTileType != TileType.Darkness)
                         {
-                            gameManager.beliefMap[y, x] -= 1;
+                            gameManager.BeliefMap[y, x] -= 10;
                         }
                     }
                 }
@@ -61,16 +61,16 @@ public class Pomdp : MonoBehaviour
         }
     }
 
-    void UpdateBeliefTexture()
+    private void UpdateBeliefTexture()
     {
         for (var y = 0; y < WorldGenerator.Instance.height; y++)
         {
             for (var x = 0; x < WorldGenerator.Instance.width; x++)
             {
                 // Clamp the belief score between 0 and MaxBelief
-                int clampedScore = Mathf.Clamp(gameManager.beliefMap[y, x], 0, MaxBelief);
+                var clampedScore = Mathf.Clamp(gameManager.BeliefMap[y, x], 0, MaxBelief);
                 // Normalize the clamped score to be between 0 and 1, and assign it to the red channel of the color
-                Color color = new Color(clampedScore / (float)MaxBelief, 0, 0);
+                var color = new Color(clampedScore / (float)MaxBelief, 0, 0);
                 _beliefTexture.SetPixel(x, y, color);
             }
         }

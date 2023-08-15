@@ -87,21 +87,30 @@ public class FogOfWarController : MonoBehaviour
         var tilePosition = overlayTilemap.WorldToCell(worldPosition);
         overlayTilemap.SetTile(tilePosition, null);
     }
-
+    
     public TileBase[,] GetObservedArea()
     {
-        // The observed area radius is the x or y distance from the farthest observable tile to the player. Get radius.
+        // Get the bounds of the overlay tilemap
         var bounds = overlayTilemap.cellBounds;
-        var radius = Mathf.Max(bounds.size.x, bounds.size.y) / 2;
-        
+    
+        // Get the player's position in the tile coordinates
         var playerTilePos = overlayTilemap.WorldToCell(_playerController.transform.position);
 
-        var observedTiles = new TileBase[radius * 2 - 1, radius * 2 - 1];
+        // Determine the maximum observed distance (max of x and y) and calculate the radius
+        var maxDistanceX = Mathf.Max(playerTilePos.x - bounds.xMin, bounds.xMax - playerTilePos.x);
+        var maxDistanceY = Mathf.Max(playerTilePos.y - bounds.yMin, bounds.yMax - playerTilePos.y);
+        var radius = Mathf.Max(maxDistanceX, maxDistanceY);
+
+        // Define the observedTiles array based on the determined radius
+        var observedTiles = new TileBase[radius * 2 + 1, radius * 2 + 1]; // +1 to include the center tile
+
         for (var x = -radius; x <= radius; x++)
         {
             for (var y = -radius; y <= radius; y++)
             {
                 var checkPos = new Vector3Int(playerTilePos.x + x, playerTilePos.y + y, playerTilePos.z);
+
+                // If the distance to the tile is within the observed radius, get the tile, else set it to darkTile
                 var distance = Vector3.Distance(_playerController.transform.position, overlayTilemap.GetCellCenterWorld(checkPos));
                 if (distance <= radius)
                 {

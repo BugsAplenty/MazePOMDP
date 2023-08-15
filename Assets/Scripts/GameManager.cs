@@ -3,10 +3,10 @@ using UnityEngine.Serialization;
 
 public class GameManager : MonoBehaviour
 {
-    public static GameManager Instance { get; set; }
+    private static GameManager Instance { get; set; }
 
     public GameObject player;
-    public int[,] beliefMap;
+    public int[,] BeliefMap;
 
     private void Awake()
     {
@@ -23,7 +23,7 @@ public class GameManager : MonoBehaviour
 
     private void Start()
     {
-        beliefMap = new int[WorldGenerator.Instance.width, WorldGenerator.Instance.height];
+        BeliefMap = new int[WorldGenerator.Instance.width, WorldGenerator.Instance.height];
         WorldGenerator.Instance.GenerateWorld();
         FogOfWarController.Instance.SetupOverlay(WorldGenerator.Instance.mainMap);
         SpawnPlayer(); 
