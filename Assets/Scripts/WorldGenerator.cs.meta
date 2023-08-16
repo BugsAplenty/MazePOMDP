@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: 3bebc270e5933a042ab33b0dfd026b38
+MonoImporter:
+  externalObjects: {}
+  serializedVersion: 2
+  defaultReferences:
+  - tilemap: {instanceID: 0}
+  - wallTile: {fileID: 11400000, guid: 8e6168f015d2ff0489da8bc9fd5fee96, type: 2}
+  - floorTile: {fileID: 11400000, guid: 1d85fd7e329016247a2a91b60f16b056, type: 2}
+  - fogOfWarController: {instanceID: 0}
+  executionOrder: 250
+  icon: {instanceID: 0}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
