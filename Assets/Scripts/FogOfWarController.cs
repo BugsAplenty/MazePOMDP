@@ -82,12 +82,6 @@ public class FogOfWarController : MonoBehaviour
     }
 
 
-    public void ClearTile(Vector3 worldPosition)
-    {
-        var tilePosition = overlayTilemap.WorldToCell(worldPosition);
-        overlayTilemap.SetTile(tilePosition, null);
-    }
-    
     public TileBase[,] GetObservedArea()
     {
         // Get the bounds of the overlay tilemap
@@ -96,10 +90,8 @@ public class FogOfWarController : MonoBehaviour
         // Get the player's position in the tile coordinates
         var playerTilePos = overlayTilemap.WorldToCell(_playerController.transform.position);
 
-        // Determine the maximum observed distance (max of x and y) and calculate the radius
-        var maxDistanceX = Mathf.Max(playerTilePos.x - bounds.xMin, bounds.xMax - playerTilePos.x);
-        var maxDistanceY = Mathf.Max(playerTilePos.y - bounds.yMin, bounds.yMax - playerTilePos.y);
-        var radius = Mathf.Max(maxDistanceX, maxDistanceY);
+        // Determine the maximum distance from the player to the farthest observed tile
+        var radius = Mathf.Max(Mathf.Abs(playerTilePos.x - bounds.xMin), Mathf.Abs(playerTilePos.x - bounds.xMax)) + 1;
 
         // Define the observedTiles array based on the determined radius
         var observedTiles = new TileBase[radius * 2 + 1, radius * 2 + 1]; // +1 to include the center tile

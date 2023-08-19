@@ -55,21 +55,19 @@ public class Pomdp : MonoBehaviour
         {
             for (var x = 0; x <= WorldGenerator.Instance.width - observedAreaWidth; x++)
             {
-                for (var j = 0; j < observedAreaHeight; j++)
+                for (var j = 0; j < observedAreaHeight; j++)        
                 {
                     for (var i = 0; i < observedAreaWidth; i++)
-                    {
+                    {       
                         var observedTileType = WorldGenerator.Instance.GetTileType(observedArea[j, i]);
                         var mapTileType = WorldGenerator.Instance.Map[y + j, x + i];
 
                         var shouldUpdateTexture = false;
-                        var isSafe = false;
 
                         if (observedTileType == mapTileType && observedTileType != TileType.Darkness)
                         {
                             BeliefMap[y, x] += 10;
                             shouldUpdateTexture = true;
-                            isSafe = true;  // Assuming matching tiles imply safety, adjust as necessary
                         }
                         else if (observedTileType != mapTileType && observedTileType != TileType.Darkness && mapTileType != TileType.Darkness)
                         {
@@ -80,7 +78,7 @@ public class Pomdp : MonoBehaviour
                         // If any change was made to the belief map, update the belief texture as well
                         if (!shouldUpdateTexture) continue;
                         var worldPos = new Vector3(x + i, y + j, 0);  // Assuming z = 0, adjust as necessary
-                        BeliefMapController.Instance.UpdatePoint(worldPos, isSafe);
+                        BeliefMapController.Instance.UpdatePoint(worldPos, BeliefMap[y, x]);
                     }
                 }
             }
