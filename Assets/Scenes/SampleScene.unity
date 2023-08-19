@@ -327,37 +327,6 @@ Camera:
   m_OcclusionCulling: 1
   m_StereoConvergence: 10
   m_StereoSeparation: 0.022
---- !u!1 &610745379
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 610745380}
-  m_Layer: 0
-  m_Name: Dungeon
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &610745380
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 610745379}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 37.616642, y: 37.616066, z: 0.36853698}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 0}
-  m_RootOrder: 3
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &863486889
 GameObject:
   m_ObjectHideFlags: 0
@@ -535,6 +504,7 @@ GameObject:
   - component: {fileID: 887950033}
   - component: {fileID: 887950035}
   - component: {fileID: 887950034}
+  - component: {fileID: 887950036}
   m_Layer: 0
   m_Name: GameManager
   m_TagString: Untagged
@@ -607,6 +577,21 @@ MonoBehaviour:
   overlayTilemap: {fileID: 1802596852}
   darkTile: {fileID: 11400000, guid: 345ba76b9eda9b84f8ef087d292691bf, type: 2}
   overlayHeight: 0
+--- !u!114 &887950036
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 887950030}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f99412e247f4a124c9aeca72ec5cbd37, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  beliefTexture: {fileID: 8400000, guid: 69408dd76669c2846a42ac9cfbb6248c, type: 2}
+  safeColor: {r: 0, g: 1, b: 0, a: 1}
+  dangerColor: {r: 1, g: 0, b: 0, a: 1}
 --- !u!1 &1026184683
 GameObject:
   m_ObjectHideFlags: 0
@@ -703,7 +688,7 @@ RectTransform:
   m_Children:
   - {fileID: 1120989892}
   m_Father: {fileID: 0}
-  m_RootOrder: 4
+  m_RootOrder: 3
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
@@ -746,8 +731,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 855, y: 434}
-  m_SizeDelta: {x: 150, y: 150}
+  m_AnchoredPosition: {x: 785, y: 366.7399}
+  m_SizeDelta: {x: 350, y: 350}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1120989893
 MonoBehaviour:
@@ -797,6 +782,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   worldMap: {fileID: 8400000, guid: 55a3687361ffe92438ecda7403c340d3, type: 2}
+  beliefMap: {fileID: 8400000, guid: 69408dd76669c2846a42ac9cfbb6248c, type: 2}
 --- !u!1 &1320608552
 GameObject:
   m_ObjectHideFlags: 0
@@ -912,7 +898,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 34feebcfb810499fb8bc25fdb288feb3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  gameManager: {fileID: 887950033}
   beliefImage: {fileID: 1120989893}
 --- !u!4 &1364990433
 Transform:
@@ -927,7 +912,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 6
+  m_RootOrder: 5
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1589003808
 GameObject:
@@ -939,6 +924,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1589003810}
   - component: {fileID: 1589003809}
+  - component: {fileID: 1589003811}
   m_Layer: 0
   m_Name: World Camera
   m_TagString: Untagged
@@ -1012,6 +998,21 @@ Transform:
   m_Father: {fileID: 1793371840}
   m_RootOrder: -1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1589003811
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1589003808}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 70eb8b494f5c4824480220526fb6b5d4, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  ignoreMask:
+    serializedVersion: 2
+    m_Bits: 72
 --- !u!1 &1793371837
 GameObject:
   m_ObjectHideFlags: 0
@@ -1043,7 +1044,7 @@ Transform:
   - {fileID: 1589003810}
   - {fileID: 489866171}
   m_Father: {fileID: 0}
-  m_RootOrder: 7
+  m_RootOrder: 6
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1802596851
 GameObject:
@@ -1056,7 +1057,7 @@ GameObject:
   - component: {fileID: 1802596854}
   - component: {fileID: 1802596852}
   - component: {fileID: 1802596853}
-  m_Layer: 0
+  m_Layer: 3
   m_Name: FogOfWarTilemap
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1276,5 +1277,5 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 5
+  m_RootOrder: 4
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}

@@ -30,6 +30,7 @@ public class GameManager : MonoBehaviour
         RandomizePlayerLocation();
     }
 
+
     private void SpawnPlayer()
     {
         var spawnCell = Vector3Int.FloorToInt(WorldGenerator.Instance.GetRandomPosition());
@@ -42,5 +43,4 @@ public class GameManager : MonoBehaviour
     {
         player.transform.position = WorldGenerator.Instance.GetRandomPosition();
     }
-
 }

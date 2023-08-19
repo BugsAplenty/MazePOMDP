@@ -1,80 +1,89 @@
 using System;
 using UnityEngine;
-using UnityEngine.Tilemaps;
 using UnityEngine.UI;
 
 public class Pomdp : MonoBehaviour
 {
-    private const int MaxBelief = 100; // The maximum value for a belief score
-    public GameManager gameManager; // Reference to the GameManager
-    public RawImage beliefImage; // Reference to a UI RawImage to display the belief map
-    private Texture2D _beliefTexture; // Texture to represent the belief map
+    private const int MaxBelief = 100; 
 
-    private void Start()
+    public RawImage beliefImage; 
+    private Texture2D _beliefTexture;
+
+    private static Pomdp Instance { get; set; } // Singleton pattern
+    private int[,] BeliefMap { get; set; } 
+
+    private void Awake()
     {
-        // Create a new Texture2D with the same dimensions as the map
-        _beliefTexture = new Texture2D(WorldGenerator.Instance.width, WorldGenerator.Instance.height);
-        beliefImage.texture = _beliefTexture;
-    }
-
-    private void Update()
-    {
-        UpdateBeliefMap();
-        UpdateBeliefTexture();
-    }
-
-    private void UpdateBeliefMap()
-    {
-        // Get radius of the player's observed area
-        var observedArea = FogOfWarController.Instance.GetObservedArea();
-        // Dimensions of the player's observed area
-        var observedAreaWidth = observedArea.GetLength(1);
-        var observedAreaHeight = observedArea.GetLength(0);
-
-        // Loop through all possible patches in the entire map
-        for (var y = 0; y <= WorldGenerator.Instance.height - observedAreaHeight; y++)
+        if (Instance == null)
         {
-            for (var x = 0; x <= WorldGenerator.Instance.width - observedAreaWidth; x++)
-            {
-                // Compare the player's observed area with the current patch in the map
-                for (var j = 0; j < observedAreaHeight; j++)
-                {
-                    for (var i = 0; i < observedAreaWidth; i++)
-                    {
-                        // Convert TileBase to TileType for comparison
-                        var observedTileType = WorldGenerator.Instance.GetTileType(observedArea[j, i]);
-                        var mapTileType = WorldGenerator.Instance.Map[y + j, x + i];
-
-                        // Increase the belief score if the tiles match and are not darkness
-                        if (observedTileType == mapTileType && observedTileType != TileType.Darkness)
-                        {
-                            gameManager.BeliefMap[y, x] += 10;
-                        }
-                        // If the tiles do not match and neither of them is darkness, decrease the belief score
-                        else if (observedTileType != mapTileType && observedTileType != TileType.Darkness && mapTileType != TileType.Darkness)
-                        {
-                            gameManager.BeliefMap[y, x] -= 10;
-                        }
-                    }
-                }
-            }
+            Instance = this;
+            BeliefMap = new int[WorldGenerator.Instance.width, WorldGenerator.Instance.height];
+        }
+        else
+        {
+            Destroy(gameObject);
         }
     }
 
-    private void UpdateBeliefTexture()
+    private void Start()
     {
-        for (var y = 0; y < WorldGenerator.Instance.height; y++)
+        _beliefTexture = new Texture2D(WorldGenerator.Instance.width, WorldGenerator.Instance.height);
+        beliefImage.texture = _beliefTexture;
+        _beliefTexture.filterMode = FilterMode.Point;
+        for (var y = 0; y < _beliefTexture.height; y++)
         {
-            for (var x = 0; x < WorldGenerator.Instance.width; x++)
+            for (var x = 0; x < _beliefTexture.width; x++)
             {
-                // Clamp the belief score between 0 and MaxBelief
-                var clampedScore = Mathf.Clamp(gameManager.BeliefMap[y, x], 0, MaxBelief);
-                // Normalize the clamped score to be between 0 and 1, and assign it to the red channel of the color
-                var color = new Color(clampedScore / (float)MaxBelief, 0, 0);
-                _beliefTexture.SetPixel(x, y, color);
+                _beliefTexture.SetPixel(x, y, Color.gray);
             }
         }
         _beliefTexture.Apply();
     }
 
+    private void Update()
+    {
+        UpdateBeliefMap();
+    }
+
+    private void UpdateBeliefMap()
+    {
+        var observedArea = FogOfWarController.Instance.GetObservedArea();
+        var observedAreaWidth = observedArea.GetLength(1);
+        var observedAreaHeight = observedArea.GetLength(0);
+
+        for (var y = 0; y <= WorldGenerator.Instance.height - observedAreaHeight; y++)
+        {
+            for (var x = 0; x <= WorldGenerator.Instance.width - observedAreaWidth; x++)
+            {
+                for (var j = 0; j < observedAreaHeight; j++)
+                {
+                    for (var i = 0; i < observedAreaWidth; i++)
+                    {
+                        var observedTileType = WorldGenerator.Instance.GetTileType(observedArea[j, i]);
+                        var mapTileType = WorldGenerator.Instance.Map[y + j, x + i];
+
+                        var shouldUpdateTexture = false;
+                        var isSafe = false;
+
+                        if (observedTileType == mapTileType && observedTileType != TileType.Darkness)
+                        {
+                            BeliefMap[y, x] += 10;
+                            shouldUpdateTexture = true;
+                            isSafe = true;  // Assuming matching tiles imply safety, adjust as necessary
+                        }
+                        else if (observedTileType != mapTileType && observedTileType != TileType.Darkness && mapTileType != TileType.Darkness)
+                        {
+                            BeliefMap[y, x] -= 10;
+                            shouldUpdateTexture = true;
+                        }
+
+                        // If any change was made to the belief map, update the belief texture as well
+                        if (!shouldUpdateTexture) continue;
+                        var worldPos = new Vector3(x + i, y + j, 0);  // Assuming z = 0, adjust as necessary
+                        BeliefMapController.Instance.UpdatePoint(worldPos, isSafe);
+                    }
+                }
+            }
+        }
+    }
 }
