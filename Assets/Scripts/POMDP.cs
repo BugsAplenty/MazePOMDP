@@ -1,12 +1,13 @@
-using System;
 using UnityEngine;
+using UnityEngine.Tilemaps;
 using UnityEngine.UI;
 
 public class Pomdp : MonoBehaviour
 {
     private const int MaxBelief = 100; 
 
-    public RawImage beliefImage; 
+    public RawImage beliefImage;
+    public WorldMapController worldMapController;
     private Texture2D _beliefTexture;
 
     private static Pomdp Instance { get; set; } // Singleton pattern
@@ -42,7 +43,7 @@ public class Pomdp : MonoBehaviour
 
     private void Update()
     {
-        // UpdateBeliefMap();
+        UpdateBeliefMap();
     }
 
     private void UpdateBeliefMap()
@@ -59,17 +60,17 @@ public class Pomdp : MonoBehaviour
                 {
                     for (var i = 0; i < observedAreaWidth; i++)
                     {       
-                        var observedTileType = WorldGenerator.Instance.GetTileType(observedArea[j, i]);
-                        var mapTileType = WorldGenerator.Instance.Map[y + j, x + i];
+                        TileBase observedTile = observedArea[j, i];
+                        TileBase mapTile = WorldGenerator.Instance.Map[y + j, x + i];
 
                         var shouldUpdateTexture = false;
 
-                        if (observedTileType == mapTileType && observedTileType != TileType.Darkness)
+                        if (observedTile == mapTile && observedTile != FogOfWarController.Instance.darkTile)
                         {
                             BeliefMap[y, x] += 10;
                             shouldUpdateTexture = true;
                         }
-                        else if (observedTileType != mapTileType && observedTileType != TileType.Darkness && mapTileType != TileType.Darkness)
+                        else if (observedTile != mapTile && observedTile != FogOfWarController.Instance.darkTile && mapTile != FogOfWarController.Instance.darkTile)
                         {
                             BeliefMap[y, x] -= 10;
                             shouldUpdateTexture = true;
@@ -79,6 +80,13 @@ public class Pomdp : MonoBehaviour
                         if (!shouldUpdateTexture) continue;
                         var worldPos = new Vector3(x + i, y + j, 0);  // Assuming z = 0, adjust as necessary
                         // BeliefMapController.Instance.UpdatePoint(worldPos, BeliefMap[y, x]);
+
+                        // Update the world map texture based on the player's position and the belief map
+                        if (worldPos !=
+                            FogOfWarController.Instance.overlayTilemap.WorldToCell(FogOfWarController.Instance
+                                .playerController.transform.position)) continue;
+                        var color = BeliefMap[y, x] >= MaxBelief / 2 ? Color.green : Color.red;
+                        worldMapController.UpdateWorldMapTexture(worldPos, color);
                     }
                 }
             }

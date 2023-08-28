@@ -1,6 +1,6 @@
 using UnityEngine;
+using UnityEngine.Serialization;
 using UnityEngine.Tilemaps;
-using static TileType;
 
 public class FogOfWarController : MonoBehaviour
 {
@@ -8,7 +8,7 @@ public class FogOfWarController : MonoBehaviour
     public Tilemap overlayTilemap;
     public Tile darkTile;
     public float overlayHeight = 1f; // new variable
-    private Component _playerController;
+    [FormerlySerializedAs("_playerController")] public Component playerController;
 
     
     private void Awake()
@@ -19,13 +19,13 @@ public class FogOfWarController : MonoBehaviour
         }
         else
         {
-            Destroy(this.gameObject);
+            Destroy(gameObject);
         }
     }
     private void Start()
     {
         // find object with tag "player"
-        _playerController = GameObject.FindGameObjectWithTag("Player").GetComponent<PlayerController>();
+        playerController = GameObject.FindGameObjectWithTag("Player").GetComponent<PlayerController>();
     }
     public void SetupOverlay(Tilemap mainMap)
     {
@@ -82,40 +82,53 @@ public class FogOfWarController : MonoBehaviour
     }
 
 
-    public TileBase[,] GetObservedArea()
+    private BoundsInt GetObservedBounds()
     {
-        // Get the bounds of the overlay tilemap
         var bounds = overlayTilemap.cellBounds;
-    
-        // Get the player's position in the tile coordinates
-        var playerTilePos = overlayTilemap.WorldToCell(_playerController.transform.position);
-
-        // Determine the maximum distance from the player to the farthest observed tile
+        var playerTilePos = overlayTilemap.WorldToCell(playerController.transform.position);
         var radius = Mathf.Max(Mathf.Abs(playerTilePos.x - bounds.xMin), Mathf.Abs(playerTilePos.x - bounds.xMax)) + 1;
 
-        // Define the observedTiles array based on the determined radius
-        var observedTiles = new TileBase[radius * 2 + 1, radius * 2 + 1]; // +1 to include the center tile
+        var minX = bounds.xMax;
+        var minY = bounds.yMax;
+        var maxX = bounds.xMin;
+        var maxY = bounds.yMin;
 
-        for (var x = -radius; x <= radius; x++)
+        for (var x = bounds.xMin; x <= bounds.xMax; x++)
         {
-            for (var y = -radius; y <= radius; y++)
+            for (var y = bounds.yMin; y <= bounds.yMax; y++)
             {
-                var checkPos = new Vector3Int(playerTilePos.x + x, playerTilePos.y + y, playerTilePos.z);
+                var checkPos = new Vector3Int(x, y, playerTilePos.z);
 
-                // If the distance to the tile is within the observed radius, get the tile, else set it to darkTile
-                var distance = Vector3.Distance(_playerController.transform.position, overlayTilemap.GetCellCenterWorld(checkPos));
-                if (distance <= radius)
-                {
-                    var tile = WorldGenerator.Instance.mainMap.GetTile(checkPos);
-                    observedTiles[x + radius, y + radius] = tile;
-                }
-                else
-                {
-                    observedTiles[x + radius, y + radius] = darkTile;
-                }
+                if (overlayTilemap.GetTile(checkPos) != null) continue;
+                if (x < minX) minX = x;
+                if (x > maxX) maxX = x;
+                if (y < minY) minY = y;
+                if (y > maxY) maxY = y;
             }
         }
 
-        return observedTiles;
+        return new BoundsInt(minX, minY, 0, maxX - minX + 1, maxY - minY + 1, 1);
+    }
+    public TileBase[,] GetObservedArea()
+    {
+        // Get the bounds of the revealed area
+        var bounds = GetObservedBounds();
+
+        // Create a 2D array of TileBase
+        var tileArray = new TileBase[bounds.size.x, bounds.size.y];
+
+        // Copy the tiles from the revealed area of the overlayTilemap to the tileArray
+        for (var x = bounds.xMin; x <= bounds.xMax; x++)
+        {
+            for (var y = bounds.yMin; y <= bounds.yMax; y++)
+            {
+                var pos = new Vector3Int(x, y, 0);
+                var tile = overlayTilemap.GetTile(pos);
+                tileArray[x - bounds.xMin, y - bounds.yMin] = tile;
+            }
+        }
+        return tileArray;
     }
 }
+
+    

@@ -19,3 +19,4 @@ public class MiniMapCamera : MonoBehaviour
         cam.aspect = 1.0f;
     }
 }
+    

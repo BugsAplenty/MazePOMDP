@@ -1,34 +1,25 @@
 using UnityEngine;
 using System.Collections.Generic;
 using UnityEngine.Tilemaps;
-public enum TileType 
-{
-    Path,
-    Wall,
-    Darkness
-}
 
 public class WorldGenerator : MonoBehaviour
 {
     public static WorldGenerator Instance { get; private set; }
 
-    // Rest of your code
-
-    
     public int width;
     public int height;
     public Tilemap tilemap;
-    public Tile wallTile;
-    public Tile floorTile;
+    public TileBase wallTile;
+    public TileBase floorTile;
     private int[,] _dungeon;
     private List<Rect> _rooms;
     [Range(0, 100)]
-    public int fillPercent; // Percentage of the room initially filled with walls
-    public int smoothingIterations; // Number of times to apply the smoothing function
-    public Tilemap mainMap; // assign in inspector
-    public float mainMapHeight; // new variable
-    public Tilemap overlayTilemap; // assign in inspector
-    public TileType[,] Map; // This is the 2D array that represents your game map
+    public int fillPercent;
+    public int smoothingIterations;
+    public Tilemap mainMap;
+    public float mainMapHeight;
+    public Tilemap overlayTilemap;
+    public TileBase[,] Map;
 
     private void Awake()
     {
@@ -44,27 +35,26 @@ public class WorldGenerator : MonoBehaviour
     }
     private void Start()
     {
-        Map = new TileType[height, width];
-        for(var y = 0; y < height; y++)
+        Map = new TileBase[height, width];
+        for (var y = 0; y < height; y++)
         {
-            for(var x = 0; x < width; x++)
+            for (var x = 0; x < width; x++)
             {
-                // Just setting random tiles for testing
-                Map[y, x] = (TileType)Random.Range(0, 3);
+                Map[y, x] = (Random.value > 0.5f) ? wallTile : floorTile;
             }
         }
         GenerateWorld();
     }
     public bool TileIsWall(Vector3Int tilePos)
     {
-        // Convert from tile position to _dungeon array indices
+        // Convert from tile position to Map array indices
         var x = tilePos.x + width / 2;
         var y = tilePos.y + height / 2;
 
         // Check if the coordinates are within the bounds of the array
         if (x >= 0 && x < width && y >= 0 && y < height)
         {
-            return _dungeon[x, y] == 1;
+            return Map[y, x] == wallTile;
         }
 
         // If the coordinates are outside the array, treat them as a wall
@@ -92,7 +82,6 @@ public class WorldGenerator : MonoBehaviour
         // Start the recursive Binary Space Partitioning
         Split(new Rect(0, 0, width, height));
 
-        // Carve out corridors between rooms
         // Carve out corridors between rooms
         foreach (var roomA in _rooms)
         {
@@ -129,14 +118,15 @@ public class WorldGenerator : MonoBehaviour
             }
         }
 
-
         // Render the dungeon on the Tilemap
         for (var x = 0; x < width; x++)
         {
             for (var y = 0; y < height; y++)
             {
-                tilemap.SetTile(new Vector3Int(x - width / 2, y - height / 2, 0),
-                    _dungeon[x, y] == 1 ? wallTile : floorTile);
+                var tilePos = new Vector3Int(x - width / 2, y - height / 2, 0);
+                var tile = _dungeon[x, y] == 1 ? wallTile : floorTile;
+                tilemap.SetTile(tilePos, tile);
+                Map[y, x] = tile;
             }
         }
     }
@@ -288,11 +278,4 @@ public class WorldGenerator : MonoBehaviour
             y > 0 && _dungeon[x, y-1] == 1 && // Check below
             y < height-1 && _dungeon[x, y+1] == 1;         // Check above
     }
-    
-    public TileType GetTileType(TileBase tile)
-    {
-        if (tile == wallTile) return TileType.Wall;
-        return tile == floorTile ? TileType.Path : TileType.Darkness; // or other default
-    }
-
 }
