@@ -46,7 +46,9 @@
   </ItemGroup>
   <ItemGroup>
      <Compile Include="Assets\Scripts\MiniMapCamera.cs" />
+     <Compile Include="Assets\Scripts\WorldMapController.cs" />
      <Compile Include="Assets\Scripts\PlayerController.cs" />
+     <Compile Include="Assets\Scripts\BeliefMapController.cs" />
      <Compile Include="Assets\Scripts\POMDP.cs" />
      <Compile Include="Assets\Scripts\SetCameraTarget.cs" />
      <Compile Include="Assets\BasicTile.cs" />
@@ -54,7 +56,6 @@
      <Compile Include="Assets\Scripts\CameraFollow.cs" />
      <Compile Include="Assets\Scripts\FogOfWarController.cs" />
      <Compile Include="Assets\Scripts\CameraManager.cs" />
-     <Compile Include="Assets\Scripts\MinimapController.cs" />
      <Compile Include="Assets\Scripts\WorldGenerator.cs" />
      <Folder Include="Assets" />
      <Folder Include="Library\BuildInstructions" />
