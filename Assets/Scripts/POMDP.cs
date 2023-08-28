@@ -42,7 +42,7 @@ public class Pomdp : MonoBehaviour
 
     private void Update()
     {
-        UpdateBeliefMap();
+        // UpdateBeliefMap();
     }
 
     private void UpdateBeliefMap()
@@ -78,7 +78,7 @@ public class Pomdp : MonoBehaviour
                         // If any change was made to the belief map, update the belief texture as well
                         if (!shouldUpdateTexture) continue;
                         var worldPos = new Vector3(x + i, y + j, 0);  // Assuming z = 0, adjust as necessary
-                        BeliefMapController.Instance.UpdatePoint(worldPos, BeliefMap[y, x]);
+                        // BeliefMapController.Instance.UpdatePoint(worldPos, BeliefMap[y, x]);
                     }
                 }
             }
