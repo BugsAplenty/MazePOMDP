@@ -7,6 +7,7 @@ public class FogOfWarController : MonoBehaviour
     public static FogOfWarController Instance { get; private set; }
     public Tilemap overlayTilemap;
     public Tile darkTile;
+    public Tile lightTile;
     public float overlayHeight = 1f; // new variable
     [FormerlySerializedAs("_playerController")] public Component playerController;
 
@@ -57,7 +58,7 @@ public class FogOfWarController : MonoBehaviour
                 if (!(Vector3.Distance(worldPosition, overlayTilemap.GetCellCenterWorld(checkPos)) <= radius)) continue;
                 if (!IsBlocked(playerTilePos, checkPos))
                 {
-                    overlayTilemap.SetTile(checkPos, null);
+                    overlayTilemap.SetTile(checkPos, lightTile);
                 }
             }
         }
@@ -86,27 +87,27 @@ public class FogOfWarController : MonoBehaviour
     {
         var bounds = overlayTilemap.cellBounds;
         var playerTilePos = overlayTilemap.WorldToCell(playerController.transform.position);
-        var radius = Mathf.Max(Mathf.Abs(playerTilePos.x - bounds.xMin), Mathf.Abs(playerTilePos.x - bounds.xMax)) + 1;
 
-        var minX = bounds.xMax;
-        var minY = bounds.yMax;
-        var maxX = bounds.xMin;
-        var maxY = bounds.yMin;
-
+        var minX = int.MaxValue;
+        var minY = int.MaxValue;
+        var maxX = int.MinValue;
+        var maxY = int.MinValue;
         for (var x = bounds.xMin; x <= bounds.xMax; x++)
         {
             for (var y = bounds.yMin; y <= bounds.yMax; y++)
             {
                 var checkPos = new Vector3Int(x, y, playerTilePos.z);
 
-                if (overlayTilemap.GetTile(checkPos) != null) continue;
-                if (x < minX) minX = x;
-                if (x > maxX) maxX = x;
-                if (y < minY) minY = y;
-                if (y > maxY) maxY = y;
+                var tileBase = overlayTilemap.GetTile(checkPos);
+                if (tileBase == lightTile)
+                {
+                    if (x < minX) minX = x + 50;
+                    if (x > maxX) maxX = x + 50;
+                    if (y < minY) minY = y + 50;
+                    if (y > maxY) maxY = y + 50;
+                } else if (tileBase == darkTile) continue;
             }
         }
-
         return new BoundsInt(minX, minY, 0, maxX - minX + 1, maxY - minY + 1, 1);
     }
     public TileBase[,] GetObservedArea()

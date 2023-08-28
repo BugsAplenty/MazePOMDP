@@ -7,11 +7,27 @@ public class WorldMapController : MonoBehaviour
     [SerializeField] private Camera worldCamera;
     [SerializeField] private int textureWidth = 256;
     [SerializeField] private int textureHeight = 256;
-    private RawImage rawImage;
+    public RawImage rawImage;
+    private Texture2D _texture2D;
+
+    public static WorldMapController Instance { get; private set; }
+
+    private void Awake()
+    {
+        if (Instance == null)
+        {
+            Instance = this;
+        }
+        else
+        {
+            Destroy(gameObject);
+        }
+    }
 
     private void Start()
     {
         StartCoroutine(SetWorldMap());
+        _texture2D = new Texture2D(textureWidth, textureHeight, TextureFormat.RGB24, false);
     }
 
     private IEnumerator SetWorldMap()
@@ -73,32 +89,7 @@ public class WorldMapController : MonoBehaviour
         var x = Mathf.FloorToInt(worldPos.x);
         var y = Mathf.FloorToInt(worldPos.y);
 
-        // Convert RenderTexture to Texture2D
-        var texture2D = RenderTextureToTexture2D(rawImage.texture as RenderTexture);
-
-        // Modify the Texture2D
-        texture2D.SetPixel(x, y, color);
-        texture2D.Apply();
-
-        // Convert Texture2D back to RenderTexture
-        var renderTexture = Texture2DToRenderTexture(texture2D);
-        rawImage.texture = renderTexture;
-    }
-
-    private static Texture2D RenderTextureToTexture2D(RenderTexture renderTexture)
-    {
-        var texture2D = new Texture2D(renderTexture.width, renderTexture.height, TextureFormat.RGB24, false);
-        RenderTexture.active = renderTexture;
-        texture2D.ReadPixels(new Rect(0, 0, renderTexture.width, renderTexture.height), 0, 0);
-        texture2D.Apply();
-        RenderTexture.active = null;
-        return texture2D;
-    }
-
-    private static RenderTexture Texture2DToRenderTexture(Texture texture2D)
-    {
-        var renderTexture = new RenderTexture(texture2D.width, texture2D.height, 24);
-        Graphics.Blit(texture2D, renderTexture);
-        return renderTexture;
+        _texture2D.SetPixel(x, y, color);
+        _texture2D.Apply();
     }
 }

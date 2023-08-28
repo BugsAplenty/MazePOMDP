@@ -17,8 +17,6 @@ public class WorldGenerator : MonoBehaviour
     public int fillPercent;
     public int smoothingIterations;
     public Tilemap mainMap;
-    public float mainMapHeight;
-    public Tilemap overlayTilemap;
     public TileBase[,] Map;
 
     private void Awake()
