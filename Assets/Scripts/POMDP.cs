@@ -61,8 +61,8 @@ public class Pomdp : MonoBehaviour
                 {
                     for (var i = 0; i < observedAreaWidth; i++)
                     {       
-                        TileBase observedTile = observedArea[j, i];
-                        TileBase mapTile = WorldGenerator.Instance.Map[y + j, x + i];
+                        var observedTile = observedArea[j, i];
+                        var mapTile = WorldGenerator.Instance.Map[y + j, x + i];
 
                         var shouldUpdateTexture = false;
 
@@ -78,14 +78,12 @@ public class Pomdp : MonoBehaviour
                         }
 
                         // If any change was made to the belief map, update the belief texture as well
-                        if (shouldUpdateTexture)
-                        {
-                            var worldPos = new Vector3(x + i, y + j, 0);  // Assuming z = 0, adjust as necessary
+                        if (!shouldUpdateTexture) continue;
+                        var worldPos = new Vector3(x + i, y + j, 0);  // Assuming z = 0, adjust as necessary
 
-                            // Update the world map texture based on the belief map
-                            var color = BeliefMap[y, x] >= MaxBelief / 2 ? Color.green : Color.red;
-                            worldMapController.UpdateWorldMapTexture(worldPos, color);
-                        }
+                        // Update the world map texture based on the belief map
+                        var color = BeliefMap[y, x] >= MaxBelief / 2 ? Color.green : Color.red;
+                        worldMapController.UpdateWorldMapTexture(worldPos, color);
                     }
                 }
             }

@@ -1,5 +1,5 @@
+using System;
 using UnityEngine;
-using UnityEngine.Serialization;
 using UnityEngine.Tilemaps;
 
 public class FogOfWarController : MonoBehaviour
@@ -9,7 +9,7 @@ public class FogOfWarController : MonoBehaviour
     public Tile darkTile;
     public Tile lightTile;
     public float overlayHeight = 1f; // new variable
-    [FormerlySerializedAs("_playerController")] public Component playerController;
+    public Component playerController;
 
     
     private void Awake()
@@ -112,10 +112,6 @@ public class FogOfWarController : MonoBehaviour
                 else if (tileBase == darkTile) continue;
             }
         }
-
-        Debug.Log($"Light Tile Count: {lightTileCount}");
-        Debug.Log($"minX: {minX}, minY: {minY}, maxX: {maxX}, maxY: {maxY}");
-
         return new BoundsInt(minX, minY, 0, maxX - minX + 1, maxY - minY + 1, 1);
     }
 
@@ -125,7 +121,7 @@ public class FogOfWarController : MonoBehaviour
         var bounds = GetObservedBounds();
 
         // Create a 2D array of TileBase
-        var tileArray = new TileBase[bounds.size.x, bounds.size.y];
+        var tileArray = new TileBase[bounds.size.x + 1, bounds.size.y + 1];
 
         // Copy the tiles from the revealed area of the overlayTilemap to the tileArray
         for (var x = bounds.xMin; x <= bounds.xMax; x++)
@@ -134,11 +130,14 @@ public class FogOfWarController : MonoBehaviour
             {
                 var pos = new Vector3Int(x, y, 0);
                 var tile = overlayTilemap.GetTile(pos);
+                // Index tileArray at relative position to the bounds
                 tileArray[x - bounds.xMin, y - bounds.yMin] = tile;
             }
         }
+
         return tileArray;
     }
+
 }
 
     
