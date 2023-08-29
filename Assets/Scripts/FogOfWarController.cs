@@ -92,24 +92,33 @@ public class FogOfWarController : MonoBehaviour
         var minY = int.MaxValue;
         var maxX = int.MinValue;
         var maxY = int.MinValue;
+        int lightTileCount = 0;
+
         for (var x = bounds.xMin; x <= bounds.xMax; x++)
         {
             for (var y = bounds.yMin; y <= bounds.yMax; y++)
             {
                 var checkPos = new Vector3Int(x, y, playerTilePos.z);
-
                 var tileBase = overlayTilemap.GetTile(checkPos);
+
                 if (tileBase == lightTile)
                 {
-                    if (x < minX) minX = x + 50;
-                    if (x > maxX) maxX = x + 50;
-                    if (y < minY) minY = y + 50;
-                    if (y > maxY) maxY = y + 50;
-                } else if (tileBase == darkTile) continue;
+                    lightTileCount++;
+                    if (x < minX) minX = x;
+                    if (x > maxX) maxX = x;
+                    if (y < minY) minY = y;
+                    if (y > maxY) maxY = y;
+                }
+                else if (tileBase == darkTile) continue;
             }
         }
+
+        Debug.Log($"Light Tile Count: {lightTileCount}");
+        Debug.Log($"minX: {minX}, minY: {minY}, maxX: {maxX}, maxY: {maxY}");
+
         return new BoundsInt(minX, minY, 0, maxX - minX + 1, maxY - minY + 1, 1);
     }
+
     public TileBase[,] GetObservedArea()
     {
         // Get the bounds of the revealed area

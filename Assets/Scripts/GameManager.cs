@@ -1,19 +1,19 @@
 using UnityEngine;
-using UnityEngine.Serialization;
+using System;
 
 public class GameManager : MonoBehaviour
 {
-    private static GameManager Instance { get; set; }
+    public static GameManager Instance { get; private set; }
 
     public GameObject player;
     public int[,] BeliefMap;
+    public event Action PlayerSpawned;
 
     private void Awake()
     {
         if (Instance == null)
         {
             Instance = this;
-            // DontDestroyOnLoad(gameObject);
         }
         else
         {
@@ -28,14 +28,13 @@ public class GameManager : MonoBehaviour
         FogOfWarController.Instance.SetupOverlay(WorldGenerator.Instance.mainMap);
         SpawnPlayer(); 
         RandomizePlayerLocation();
+        PlayerSpawned?.Invoke();
     }
-
 
     private void SpawnPlayer()
     {
         var spawnCell = Vector3Int.FloorToInt(WorldGenerator.Instance.GetRandomPosition());
         var spawnPosition = WorldGenerator.Instance.mainMap.GetCellCenterWorld(spawnCell);
-        // Debug.Log("Spawning player at " + spawnPosition);
         Instantiate(player, spawnPosition, Quaternion.identity);
     }
 

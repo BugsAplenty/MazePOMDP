@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using UnityEngine;
 using UnityEngine.Serialization;
@@ -8,23 +9,25 @@ public class PlayerController : MonoBehaviour
 
     public int clearRadius = 3;
     public float moveSpeed = 5f;
+    public delegate void PlayerMovedEventHandler(object sender, EventArgs e);
+    public event PlayerMovedEventHandler PlayerMoved;
 
     private Rigidbody2D _rb;
     public Vector3Int currentCellPosition;
     private bool _isMoving;
 
-    // private void Awake()
-    // {
-    //     if (Instance == null)
-    //     {
-    //         Instance = this;
-    //         // DontDestroyOnLoad(gameObject);
-    //     }
-    //     else
-    //     {
-    //         Destroy(gameObject);
-    //     }
-    // }
+    private void Awake()
+    {
+        if (Instance == null)
+        {
+            Instance = this;
+            // DontDestroyOnLoad(gameObject);
+        }
+        else
+        {
+            Destroy(gameObject);
+        }
+    }
 
     private void Start()
     {
@@ -87,5 +90,13 @@ public class PlayerController : MonoBehaviour
         FogOfWarController.Instance.ClearArea(transform.position, clearRadius);
 
         _isMoving = false;
+
+        // Raise the PlayerMoved event
+        OnPlayerMoved(EventArgs.Empty);
     }
+    protected virtual void OnPlayerMoved(EventArgs e)
+    {
+        PlayerMoved?.Invoke(this, e);
+    }
+
 }

@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 using UnityEngine.Tilemaps;
 
@@ -38,9 +39,10 @@ public class Pomdp : MonoBehaviour
             }
         }
         _beliefTexture.Apply();
+        PlayerController.Instance.PlayerMoved += PlayerController_PlayerMoved;
     }
 
-    private void Update()
+    private void PlayerController_PlayerMoved(object sender, EventArgs e)
     {
         UpdateBeliefMap();
     }
