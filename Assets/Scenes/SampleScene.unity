@@ -552,8 +552,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3bebc270e5933a042ab33b0dfd026b38, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  width: 10
-  height: 10
+  width: 20
+  height: 20
   tilemap: {fileID: 863486892}
   wallTile: {fileID: 11400000, guid: 8e6168f015d2ff0489da8bc9fd5fee96, type: 2}
   floorTile: {fileID: 11400000, guid: 1d85fd7e329016247a2a91b60f16b056, type: 2}
@@ -728,7 +728,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 710, y: 303.34}
+  m_AnchoredPosition: {x: 710, y: 305.66}
   m_SizeDelta: {x: 500, y: 500}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1113261982

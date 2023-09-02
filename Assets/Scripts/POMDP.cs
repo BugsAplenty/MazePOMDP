@@ -53,40 +53,42 @@ public class Pomdp : MonoBehaviour
         var observedAreaWidth = observedArea.GetLength(1);
         var observedAreaHeight = observedArea.GetLength(0);
 
-        for (var y = 0; y <= WorldGenerator.Instance.height - observedAreaHeight; y++)
+        // Assuming the observed area is always centered around the player
+        var centerX = WorldGenerator.Instance.width / 2;
+        var centerY = WorldGenerator.Instance.height / 2;
+
+        var startX = centerX - observedAreaWidth / 2;
+        var startY = centerY - observedAreaHeight / 2;
+
+        for (var j = 0; j < observedAreaHeight; j++)
         {
-            for (var x = 0; x <= WorldGenerator.Instance.width - observedAreaWidth; x++)
+            for (var i = 0; i < observedAreaWidth; i++)
             {
-                for (var j = 0; j < observedAreaHeight; j++)        
+                var x = startX + i;
+                var y = startY + j;
+
+                var observedTile = observedArea[j, i];
+                var mapTile = WorldGenerator.Instance.Map[y, x];
+
+                var shouldUpdateTexture = false;
+
+                if (observedTile == mapTile && observedTile != FogOfWarController.Instance.darkTile)
                 {
-                    for (var i = 0; i < observedAreaWidth; i++)
-                    {       
-                        var observedTile = observedArea[j, i];
-                        var mapTile = WorldGenerator.Instance.Map[y + j, x + i];
-
-                        var shouldUpdateTexture = false;
-
-                        if (observedTile == mapTile && observedTile != FogOfWarController.Instance.darkTile)
-                        {
-                            BeliefMap[y, x] += 10;
-                            shouldUpdateTexture = true;
-                        }
-                        else if (observedTile != mapTile && observedTile != FogOfWarController.Instance.darkTile && mapTile != FogOfWarController.Instance.darkTile)
-                        {
-                            BeliefMap[y, x] -= 10;
-                            shouldUpdateTexture = true;
-                        }
-
-                        // If any change was made to the belief map, update the belief texture as well
-                        if (!shouldUpdateTexture) continue;
-                        var worldPos = new Vector3(x + i, y + j, 0);  // Assuming z = 0, adjust as necessary
-
-                        // Update the world map texture based on the belief map
-                        var color = BeliefMap[y, x] >= MaxBelief / 2 ? Color.green : Color.red;
-                        worldMapController.UpdateWorldMapTexture(worldPos, color);
-                    }
+                    BeliefMap[y, x] += 10;
+                    shouldUpdateTexture = true;
                 }
+                else if (observedTile != mapTile && observedTile != FogOfWarController.Instance.darkTile && mapTile != FogOfWarController.Instance.darkTile)
+                {
+                    BeliefMap[y, x] -= 10;
+                    shouldUpdateTexture = true;
+                }
+
+                if (!shouldUpdateTexture) continue;
+                var worldPos = new Vector3(x, y, 0);
+                var color = BeliefMap[y, x] >= MaxBelief / 2 ? Color.green : Color.red;
+                worldMapController.UpdateWorldMapTexture(worldPos, color);
             }
         }
     }
+
 }
