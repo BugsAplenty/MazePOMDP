@@ -5,8 +5,8 @@ using UnityEngine.UI;
 public class WorldMapController : MonoBehaviour
 {
     [SerializeField] private Camera worldCamera;
-    [SerializeField] private int textureWidth = 256;
-    [SerializeField] private int textureHeight = 256;
+    private int textureWidth;
+    private int textureHeight;
     public RawImage rawImage;
     private Texture2D _texture2D;
     private RenderTexture _renderTexture;
@@ -27,8 +27,13 @@ public class WorldMapController : MonoBehaviour
 
     private void Start()
     {
+        textureWidth = WorldGenerator.Instance.width;
+        textureHeight = WorldGenerator.Instance.height;
         StartCoroutine(SetWorldMap());
-        _texture2D = new Texture2D(textureWidth, textureHeight, TextureFormat.RGB24, false);
+        _texture2D = new Texture2D(textureWidth, textureHeight, TextureFormat.RGB24, false)
+        {
+            filterMode = FilterMode.Point
+        };
     }
 
     private IEnumerator SetWorldMap()
@@ -46,10 +51,14 @@ public class WorldMapController : MonoBehaviour
 
         // Use the modified RenderTexture
         rawImage.texture = modifiedTexture;
-
+        
+        // Set raw image filter mode to point
+        rawImage.texture.filterMode = FilterMode.Point;
+        // Release the RenderTexture as it is no longer needed
+        RenderTexture.ReleaseTemporary(_renderTexture);
     }
 
-    private static RenderTexture ModifyRenderTexture(RenderTexture source)
+    private static Texture2D ModifyRenderTexture(RenderTexture source)
     {
         var width = source.width;
         var height = source.height;
@@ -79,11 +88,7 @@ public class WorldMapController : MonoBehaviour
         tempTexture.SetPixels(pixels);
         tempTexture.Apply();
 
-        // Step 4: Create a new RenderTexture and copy the modified pixel data
-        var result = new RenderTexture(width, height, 24);
-        Graphics.Blit(tempTexture, result);
-
-        return result;
+        return tempTexture;
     }
 
     public void UpdateWorldMapTexture(Vector3 worldPos, Color color)
@@ -91,20 +96,20 @@ public class WorldMapController : MonoBehaviour
         var x = Mathf.FloorToInt(worldPos.x);
         var y = Mathf.FloorToInt(worldPos.y);
 
-        // Create a temporary Texture2D with the same dimensions as the RenderTexture
+        // Create a temporary Texture2D with the same dimensions as the texture in rawImage
         var tempTexture = new Texture2D(textureWidth, textureHeight, TextureFormat.RGB24, false);
 
-        // Copy the pixel data from the RenderTexture to the temporary Texture2D
-        RenderTexture.active = (RenderTexture)rawImage.texture;
-        tempTexture.ReadPixels(new Rect(0, 0, textureWidth, textureHeight), 0, 0);
+        // Copy the pixel data from the texture in rawImage to the temporary Texture2D
+        tempTexture.SetPixels((rawImage.texture as Texture2D).GetPixels());
         tempTexture.Apply();
-        RenderTexture.active = null;
 
         // Update the pixel in the temporary Texture2D
         tempTexture.SetPixel(x, y, color);
         tempTexture.Apply();
 
-        // Copy the pixel data from the temporary Texture2D to the RenderTexture
-        Graphics.Blit(tempTexture, (RenderTexture)rawImage.texture);
+        // Copy the pixel data from the temporary Texture2D to the texture in rawImage
+        var rawImageTexture = rawImage.texture as Texture2D;
+        rawImageTexture.SetPixels(tempTexture.GetPixels());
+        rawImageTexture.Apply();
     }
 }

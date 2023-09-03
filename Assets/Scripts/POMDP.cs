@@ -84,11 +84,13 @@ public class Pomdp : MonoBehaviour
                 }
 
                 if (!shouldUpdateTexture) continue;
+                var normalizedBelief = Mathf.Clamp(BeliefMap[y, x] / 100f, 0f, 1f);
                 var worldPos = new Vector3(x, y, 0);
-                var color = BeliefMap[y, x] >= MaxBelief / 2 ? Color.green : Color.red;
-                worldMapController.UpdateWorldMapTexture(worldPos, color);
+                var color = new Color(normalizedBelief, 0, 1 - normalizedBelief);
+                WorldMapController.Instance.UpdateWorldMapTexture(worldPos, color);
             }
         }
     }
+
 
 }
