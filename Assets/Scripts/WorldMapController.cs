@@ -41,8 +41,6 @@ public class WorldMapController : MonoBehaviour
         _renderTexture = new RenderTexture(textureWidth, textureHeight, 24);
         worldCamera.targetTexture = _renderTexture;
         rawImage.texture = _renderTexture;
-        rawImage.texture.height = WorldGenerator.Instance.height;
-        rawImage.texture.width = WorldGenerator.Instance.width;
 
 
         // Wait until the RenderTexture is ready
@@ -78,13 +76,13 @@ public class WorldMapController : MonoBehaviour
         var pixels = tempTexture.GetPixels();
         for(var i = 0; i < pixels.Length; i++)
         {
-            if(pixels[i].r < 0.5f) // dark gray
+            if(pixels[i].r < 0.5f) // Assuming dark gray is the wall
             {
-                pixels[i] = Color.black;
+                pixels[i] = Color.black;  // Wall
             }
-            else // light gray
+            else 
             {
-                pixels[i] = Color.white;
+                pixels[i] = Color.white;  // Path
             }
         }
         tempTexture.SetPixels(pixels);
@@ -97,20 +95,12 @@ public class WorldMapController : MonoBehaviour
     {
         var x = Mathf.FloorToInt(worldPos.x);
         var y = Mathf.FloorToInt(worldPos.y);
-        // Create a temporary Texture2D with the same dimensions as the texture in rawImage
-        var tempTexture = new Texture2D(textureWidth, textureHeight, TextureFormat.RGB24, false);
 
-        // Copy the pixel data from the texture in rawImage to the temporary Texture2D
-        tempTexture.SetPixels((rawImage.texture as Texture2D).GetPixels());
-        tempTexture.Apply();
+        // Directly update the _texture2D pixel
+        _texture2D.SetPixel(x, y, color);
+        _texture2D.Apply();
 
-        // Update the pixel in the temporary Texture2D
-        tempTexture.SetPixel(x, y, color);
-        tempTexture.Apply();
-
-        // Copy the pixel data from the temporary Texture2D to the texture in rawImage
-        var rawImageTexture = rawImage.texture as Texture2D;
-        rawImageTexture.SetPixels(tempTexture.GetPixels());
-        rawImageTexture.Apply();
+        // Set the updated texture to rawImage
+        rawImage.texture = _texture2D;
     }
 }

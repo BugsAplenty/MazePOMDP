@@ -53,44 +53,57 @@ public class Pomdp : MonoBehaviour
         var observedAreaWidth = observedArea.GetLength(1);
         var observedAreaHeight = observedArea.GetLength(0);
 
-        // Assuming the observed area is always centered around the player
-        var centerX = WorldGenerator.Instance.width / 2;
-        var centerY = WorldGenerator.Instance.height / 2;
-
-        var startX = centerX - observedAreaWidth / 2;
-        var startY = centerY - observedAreaHeight / 2;
-
-        for (var j = 0; j < observedAreaHeight; j++)
+        for (int startX = 0; startX <= WorldGenerator.Instance.width - observedAreaWidth; startX++)
         {
-            for (var i = 0; i < observedAreaWidth; i++)
+            for (int startY = 0; startY <= WorldGenerator.Instance.height - observedAreaHeight; startY++)
             {
-                var x = startX + i;
-                var y = startY + j;
+                bool isMismatched = false;
 
-                var observedTile = observedArea[j, i];
-                var mapTile = WorldGenerator.Instance.Map[y, x];
-
-                var shouldUpdateTexture = false;
-
-                if (observedTile == mapTile && observedTile != FogOfWarController.Instance.darkTile)
+                // First, check for mismatches in the subsection
+                for (var j = 0; j < observedAreaHeight && !isMismatched; j++)
                 {
-                    BeliefMap[y, x] += 10;
-                    shouldUpdateTexture = true;
-                }
-                else if (observedTile != mapTile && observedTile != FogOfWarController.Instance.darkTile && mapTile != FogOfWarController.Instance.darkTile)
-                {
-                    BeliefMap[y, x] -= 10;
-                    shouldUpdateTexture = true;
+                    for (var i = 0; i < observedAreaWidth && !isMismatched; i++)
+                    {
+                        var x = startX + i;
+                        var y = startY + j;
+
+                        var observedTile = observedArea[j, i];
+                        var mapTile = WorldGenerator.Instance.Map[y, x];
+
+                        if (mapTile == WorldGenerator.Instance.wallTile) continue;
+
+                        if (observedTile != mapTile && observedTile != FogOfWarController.Instance.darkTile)
+                        {
+                            isMismatched = true;
+                        }
+                    }
                 }
 
-                if (!shouldUpdateTexture) continue;
-                var normalizedBelief = Mathf.Clamp(BeliefMap[y, x] / 100f, 0f, 1f);
-                var worldPos = new Vector3(x, y, 0);
-                var color = new Color(normalizedBelief, 0, 1 - normalizedBelief);
-                WorldMapController.Instance.UpdateWorldMapTexture(worldPos, color);
+                // If a mismatch was found, then update the belief and paint the subsection red
+                if (isMismatched)
+                {
+                    for (var j = 0; j < observedAreaHeight; j++)
+                    {
+                        for (var i = 0; i < observedAreaWidth; i++)
+                        {
+                            var x = startX + i;
+                            var y = startY + j;
+
+                            var mapTile = WorldGenerator.Instance.Map[y, x];
+
+                            if (mapTile != FogOfWarController.Instance.darkTile && mapTile != WorldGenerator.Instance.wallTile)
+                            {
+                                BeliefMap[y, x] -= 10;
+                                WorldMapController.Instance.UpdateWorldMapTexture(new Vector3(x, y, 0), Color.red);
+                            }
+                            else if (mapTile == WorldGenerator.Instance.wallTile)
+                            {
+                                WorldMapController.Instance.UpdateWorldMapTexture(new Vector3(x, y, 0), Color.black);
+                            }
+                        }
+                    }
+                }
             }
         }
     }
-
-
 }

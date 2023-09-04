@@ -112,6 +112,8 @@ public class FogOfWarController : MonoBehaviour
                 else if (tileBase == darkTile) continue;
             }
         }
+        // Display bounds of observed area
+        Debug.Log("Observed Area Bounds: " + minX + ", " + minY + ", " + maxX + ", " + maxY);
         return new BoundsInt(minX, minY, 0, maxX - minX + 1, maxY - minY + 1, 1);
     }
 
