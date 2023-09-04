@@ -5,12 +5,11 @@ using UnityEngine.UI;
 public class WorldMapController : MonoBehaviour
 {
     [SerializeField] private Camera worldCamera;
-    private int textureWidth;
-    private int textureHeight;
+    public int textureWidth;
+    public int textureHeight;
     public RawImage rawImage;
     private Texture2D _texture2D;
     private RenderTexture _renderTexture;
-
     public static WorldMapController Instance { get; private set; }
 
     private void Awake()
@@ -42,6 +41,9 @@ public class WorldMapController : MonoBehaviour
         _renderTexture = new RenderTexture(textureWidth, textureHeight, 24);
         worldCamera.targetTexture = _renderTexture;
         rawImage.texture = _renderTexture;
+        rawImage.texture.height = WorldGenerator.Instance.height;
+        rawImage.texture.width = WorldGenerator.Instance.width;
+
 
         // Wait until the RenderTexture is ready
         yield return new WaitUntil(() => _renderTexture.IsCreated());
@@ -95,7 +97,6 @@ public class WorldMapController : MonoBehaviour
     {
         var x = Mathf.FloorToInt(worldPos.x);
         var y = Mathf.FloorToInt(worldPos.y);
-
         // Create a temporary Texture2D with the same dimensions as the texture in rawImage
         var tempTexture = new Texture2D(textureWidth, textureHeight, TextureFormat.RGB24, false);
 
