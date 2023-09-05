@@ -505,6 +505,7 @@ GameObject:
   - component: {fileID: 887950035}
   - component: {fileID: 887950034}
   - component: {fileID: 887950036}
+  - component: {fileID: 887950037}
   m_Layer: 0
   m_Name: GameManager
   m_TagString: Untagged
@@ -552,8 +553,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3bebc270e5933a042ab33b0dfd026b38, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  width: 100
-  height: 100
+  width: 20
+  height: 20
   tilemap: {fileID: 863486892}
   wallTile: {fileID: 11400000, guid: 8e6168f015d2ff0489da8bc9fd5fee96, type: 2}
   floorTile: {fileID: 11400000, guid: 1d85fd7e329016247a2a91b60f16b056, type: 2}
@@ -589,6 +590,19 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f99412e247f4a124c9aeca72ec5cbd37, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!114 &887950037
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 887950030}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 34feebcfb810499fb8bc25fdb288feb3, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  worldMapController: {fileID: 0}
 --- !u!1 &1026184683
 GameObject:
   m_ObjectHideFlags: 0
@@ -779,6 +793,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   worldCamera: {fileID: 1589003809}
+  textureWidth: 0
+  textureHeight: 0
   rawImage: {fileID: 0}
 --- !u!1 &1320608552
 GameObject:
@@ -866,51 +882,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   playerCamera: {fileID: 1320608554}
---- !u!1 &1364990431
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 1364990433}
-  - component: {fileID: 1364990432}
-  m_Layer: 0
-  m_Name: POMDP
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!114 &1364990432
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1364990431}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 34feebcfb810499fb8bc25fdb288feb3, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  worldMapController: {fileID: 0}
---- !u!4 &1364990433
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1364990431}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 839.0124, y: 253.87328, z: -6.635698}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 0}
-  m_RootOrder: 5
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1589003808
 GameObject:
   m_ObjectHideFlags: 0
@@ -1041,7 +1012,7 @@ Transform:
   - {fileID: 1589003810}
   - {fileID: 489866171}
   m_Father: {fileID: 0}
-  m_RootOrder: 6
+  m_RootOrder: 5
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1802596851
 GameObject:

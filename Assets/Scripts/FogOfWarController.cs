@@ -56,12 +56,20 @@ public class FogOfWarController : MonoBehaviour
             {
                 var checkPos = new Vector3Int(playerTilePos.x + x, playerTilePos.y + y, playerTilePos.z);
                 if (!(Vector3.Distance(worldPosition, overlayTilemap.GetCellCenterWorld(checkPos)) <= radius)) continue;
-                if (!IsBlocked(playerTilePos, checkPos))
+                if (!IsBlocked(playerTilePos, checkPos) && !IsOutsideBounds(checkPos))
                 {
                     overlayTilemap.SetTile(checkPos, lightTile);
                 }
             }
         }
+    }
+
+    private static bool IsOutsideBounds(Vector3Int checkPos)
+    {
+        //Create bounds based on the world map
+        var bounds = WorldGenerator.Instance.tilemap.cellBounds;
+        //Check if the checkPos is within the bounds
+        return !bounds.Contains(checkPos);
     }
 
     private static bool IsBlocked(Vector3Int start, Vector3Int end)
@@ -112,9 +120,14 @@ public class FogOfWarController : MonoBehaviour
                 else if (tileBase == darkTile) continue;
             }
         }
+        // Force the bounds to be no more than the size of the map
+        minX = Math.Max(minX, bounds.xMin);
+        minY = Math.Max(minY, bounds.yMin);
+        maxX = Math.Min(maxX, bounds.xMax);
+        maxY = Math.Min(maxY, bounds.yMax);
         // Display bounds of observed area
-        Debug.Log("Observed Area Bounds: " + minX + ", " + minY + ", " + maxX + ", " + maxY);
-        return new BoundsInt(minX, minY, 0, maxX - minX + 1, maxY - minY + 1, 1);
+        // Debug.Log("Observed Area Bounds: " + minX + ", " + minY + ", " + maxX + ", " + maxY);
+        return new BoundsInt(minX, minY, 0, maxX - minX, maxY - minY, 1);
     }
 
     public TileBase[,] GetObservedArea()
