@@ -74,21 +74,59 @@ public class FogOfWarController : MonoBehaviour
 
     private static bool IsBlocked(Vector3Int start, Vector3Int end)
     {
-        var rayDirection = Vector3.Normalize(end - start);
-        var distance = Vector3Int.Distance(start, end);
-        var currentPos = start + new Vector3Int((int)rayDirection.x, (int)rayDirection.y, (int)rayDirection.z);
+        int x0 = start.x;
+        int y0 = start.y;
+        int x1 = end.x;
+        int y1 = end.y;
 
-        for (var i = 1; i <= distance; i++)
+        int dx = Mathf.Abs(x1 - x0);
+        int dy = Mathf.Abs(y1 - y0);
+        int sx = x0 < x1 ? 1 : -1;
+        int sy = y0 < y1 ? 1 : -1;
+        int err = (dx > dy ? dx : -dy) / 2;
+        int e2;
+
+        bool wallEncountered = false;  // flag to check if a wall tile has been encountered
+
+        while (true)
         {
-            if (WorldGenerator.Instance.TileIsWall(currentPos))
+            Vector3Int checkPos = new Vector3Int(x0, y0, 0);
+        
+            if (WorldGenerator.Instance.TileIsWall(checkPos))
             {
-                return true;
+                if(wallEncountered)  // if we've already encountered a wall, then exit after illuminating this tile
+                    return true;
+                wallEncountered = true;
             }
-            currentPos = start + new Vector3Int((int)(i * rayDirection.x), (int)(i * rayDirection.y), (int)(i * rayDirection.z));
+            else
+            {
+                wallEncountered = false;  // reset if it's not a wall
+            }
+
+            if (x0 == x1 && y0 == y1)
+            {
+                break;
+            }
+
+            e2 = err;
+
+            if (e2 > -dx)
+            {
+                err -= dy;
+                x0 += sx;
+            }
+        
+            if (e2 < dy)
+            {
+                err += dx;
+                y0 += sy;
+            }
         }
 
         return false;
     }
+
+
 
 
     private BoundsInt GetObservedBounds()
