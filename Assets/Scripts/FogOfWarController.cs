@@ -34,6 +34,7 @@ public class FogOfWarController : MonoBehaviour
         overlayTilemap.transform.localPosition = new Vector3(0, 0, overlayHeight);
 
         var bounds = mainMap.cellBounds;
+        var allTiles = mainMap.GetTilesBlock(bounds);
 
         for (var x = 0; x < bounds.size.x; x++)
         {

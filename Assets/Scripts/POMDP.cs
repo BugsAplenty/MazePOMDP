@@ -49,26 +49,16 @@ public class Pomdp : MonoBehaviour
     }
     
     
-    private IEnumerator UpdateBeliefMap()
+    private static IEnumerator UpdateBeliefMap()
     {
         var compositeObservedArea = FogOfWarController.GetCompositeObservedArea();
         var observedAreaWidth = compositeObservedArea.GetLength(1);
         var observedAreaHeight = compositeObservedArea.GetLength(0);
-        // Initial pass to paint wall tiles black
-        for (int y = 0; y < WorldGenerator.Instance.height; y++)
-        {
-            for (int x = 0; x < WorldGenerator.Instance.width; x++)
-            {
-                if (WorldGenerator.Instance.Map[y, x] == WorldGenerator.Instance.wallTile)
-                {
-                    WorldMapController.Instance.UpdateWorldMapTexture(new Vector3(x, y, 0), Color.black);
-                }
-            }
-        }
+        WorldMapController.Instance.PaintWallTilesBlack();
 
-        for (int startX = 0; startX <= WorldGenerator.Instance.width - observedAreaWidth; startX++)
+        for (var startX = 0; startX <= WorldGenerator.Instance.width - observedAreaWidth; startX++)
         {
-            for (int startY = 0; startY <= WorldGenerator.Instance.height - observedAreaHeight; startY++)
+            for (var startY = 0; startY <= WorldGenerator.Instance.height - observedAreaHeight; startY++)
             {
                 for (var j = 0; j < observedAreaHeight; j++)
                 {
@@ -86,7 +76,7 @@ public class Pomdp : MonoBehaviour
                 }
 
                 yield return new WaitForSeconds(0.05f);  // Delay for visualization. Adjust time as needed.
-                bool isMismatched = false;
+                var isMismatched = false;
 
                 // Check for mismatches in the subsection
                 for (var j = 0; j < observedAreaHeight && !isMismatched; j++)

@@ -103,4 +103,18 @@ public class WorldMapController : MonoBehaviour
         // Set the updated texture to rawImage
         rawImage.texture = _texture2D;
     }
+
+    public void PaintWallTilesBlack()
+    {
+        for (int y = 0; y < WorldGenerator.Instance.height; y++)
+        {
+            for (int x = 0; x < WorldGenerator.Instance.width; x++)
+            {
+                if (WorldGenerator.Instance.Map[y, x] == WorldGenerator.Instance.wallTile)
+                {
+                    Instance.UpdateWorldMapTexture(new Vector3(x, y, 0), Color.black);
+                }
+            }
+        }
+    }
 }
