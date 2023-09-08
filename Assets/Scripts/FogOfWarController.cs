@@ -34,7 +34,6 @@ public class FogOfWarController : MonoBehaviour
         overlayTilemap.transform.localPosition = new Vector3(0, 0, overlayHeight);
 
         var bounds = mainMap.cellBounds;
-        var allTiles = mainMap.GetTilesBlock(bounds);
 
         for (var x = 0; x < bounds.size.x; x++)
         {
@@ -74,23 +73,22 @@ public class FogOfWarController : MonoBehaviour
 
     private static bool IsBlocked(Vector3Int start, Vector3Int end)
     {
-        int x0 = start.x;
-        int y0 = start.y;
-        int x1 = end.x;
-        int y1 = end.y;
+        var x0 = start.x;
+        var y0 = start.y;
+        var x1 = end.x;
+        var y1 = end.y;
 
-        int dx = Mathf.Abs(x1 - x0);
-        int dy = Mathf.Abs(y1 - y0);
-        int sx = x0 < x1 ? 1 : -1;
-        int sy = y0 < y1 ? 1 : -1;
-        int err = (dx > dy ? dx : -dy) / 2;
-        int e2;
+        var dx = Mathf.Abs(x1 - x0);
+        var dy = Mathf.Abs(y1 - y0);
+        var sx = x0 < x1 ? 1 : -1;
+        var sy = y0 < y1 ? 1 : -1;
+        var err = (dx > dy ? dx : -dy) / 2;
 
-        bool wallEncountered = false;  // flag to check if a wall tile has been encountered
+        var wallEncountered = false;  // flag to check if a wall tile has been encountered
 
         while (true)
         {
-            Vector3Int checkPos = new Vector3Int(x0, y0, 0);
+            var checkPos = new Vector3Int(x0, y0, 0);
         
             if (WorldGenerator.Instance.TileIsWall(checkPos))
             {
@@ -108,19 +106,17 @@ public class FogOfWarController : MonoBehaviour
                 break;
             }
 
-            e2 = err;
+            var e2 = err;
 
             if (e2 > -dx)
             {
                 err -= dy;
                 x0 += sx;
             }
-        
-            if (e2 < dy)
-            {
-                err += dx;
-                y0 += sy;
-            }
+
+            if (e2 >= dy) continue;
+            err += dx;
+            y0 += sy;
         }
 
         return false;
@@ -129,10 +125,10 @@ public class FogOfWarController : MonoBehaviour
 
     private void DrawDebugRectangle(BoundsInt bounds, Color color)
     {
-        Vector3 topLeft = overlayTilemap.CellToWorld(new Vector3Int(bounds.xMin, bounds.yMax, 0));
-        Vector3 topRight = overlayTilemap.CellToWorld(new Vector3Int(bounds.xMax, bounds.yMax, 0));
-        Vector3 bottomLeft = overlayTilemap.CellToWorld(new Vector3Int(bounds.xMin, bounds.yMin, 0));
-        Vector3 bottomRight = overlayTilemap.CellToWorld(new Vector3Int(bounds.xMax, bounds.yMin, 0));
+        var topLeft = overlayTilemap.CellToWorld(new Vector3Int(bounds.xMin, bounds.yMax, 0));
+        var topRight = overlayTilemap.CellToWorld(new Vector3Int(bounds.xMax, bounds.yMax, 0));
+        var bottomLeft = overlayTilemap.CellToWorld(new Vector3Int(bounds.xMin, bounds.yMin, 0));
+        var bottomRight = overlayTilemap.CellToWorld(new Vector3Int(bounds.xMax, bounds.yMin, 0));
 
         Debug.DrawLine(topLeft, topRight, color, 5f, false);
         Debug.DrawLine(topRight, bottomRight, color, 5f, false);
@@ -149,7 +145,6 @@ public class FogOfWarController : MonoBehaviour
         var minY = int.MaxValue;
         var maxX = int.MinValue;
         var maxY = int.MinValue;
-        int lightTileCount = 0;
 
         for (var x = bounds.xMin; x <= bounds.xMax; x++)
         {
@@ -158,15 +153,11 @@ public class FogOfWarController : MonoBehaviour
                 var checkPos = new Vector3Int(x, y, playerTilePos.z);
                 var tileBase = overlayTilemap.GetTile(checkPos);
 
-                if (tileBase == lightTile)
-                {
-                    lightTileCount++;
-                    if (x < minX) minX = x;
-                    if (x > maxX) maxX = x;
-                    if (y < minY) minY = y;
-                    if (y > maxY) maxY = y;
-                }
-                else if (tileBase == darkTile) continue;
+                if (tileBase != lightTile) continue;
+                if (x < minX) minX = x;
+                if (x > maxX) maxX = x;
+                if (y < minY) minY = y;
+                if (y > maxY) maxY = y;
             }
         }
         // Force the bounds to be no more than the size of the map
@@ -179,10 +170,10 @@ public class FogOfWarController : MonoBehaviour
         return new BoundsInt(minX, minY, 0, maxX - minX + 1, maxY - minY + 1, 1);
     }
 
-    public TileBase[,] GetObservedArea()
+    private TileBase[,] GetObservedArea()
     {
         var bounds = GetObservedBounds();
-        DrawDebugRectangle(bounds, Color.yellow);
+        // DrawDebugRectangle(bounds, Color.yellow);
 
         // Create a 2D array of TileBase
         var tileArray = new TileBase[bounds.size.x + 1, bounds.size.y + 1];
@@ -200,6 +191,27 @@ public class FogOfWarController : MonoBehaviour
         }
 
         return tileArray;
+    }
+    public static TileBase[,] GetCompositeObservedArea()
+    // Returns a 2D array of TileBase that changes light tiles to the corresponding tiles in the world map
+    {
+        var fogObservedArea = Instance.GetObservedArea();
+        var width = fogObservedArea.GetLength(1);
+        var height = fogObservedArea.GetLength(0);
+        var compositeObservedArea = new TileBase[height, width];
+
+        for (var y = 0; y < height; y++)
+        {
+            for (var x = 0; x < width; x++)
+            {
+                if (fogObservedArea[y, x] != Instance.darkTile)
+                {
+                    compositeObservedArea[y, x] = WorldGenerator.Instance.Map[y, x];
+                }
+            }
+        }
+
+        return compositeObservedArea;
     }
 
 }

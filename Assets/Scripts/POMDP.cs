@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using UnityEngine;
 using UnityEngine.Tilemaps;
 
@@ -44,34 +45,15 @@ public class Pomdp : MonoBehaviour
 
     private void PlayerController_PlayerMoved(object sender, EventArgs e)
     {
-        UpdateBeliefMap();
+        StartCoroutine(UpdateBeliefMap());
     }
-    private TileBase[,] GetCompositeObservedArea()
+    
+    
+    private IEnumerator UpdateBeliefMap()
     {
-        var fogObservedArea = FogOfWarController.Instance.GetObservedArea();
-        int width = fogObservedArea.GetLength(1);
-        int height = fogObservedArea.GetLength(0);
-        var compositeObservedArea = new TileBase[height, width];
-
-        for (var y = 0; y < height; y++)
-        {
-            for (var x = 0; x < width; x++)
-            {
-                if (fogObservedArea[y, x] != FogOfWarController.Instance.darkTile)
-                {
-                    compositeObservedArea[y, x] = WorldGenerator.Instance.Map[y, x];
-                }
-            }
-        }
-
-        return compositeObservedArea;
-    }
-    private void UpdateBeliefMap()
-    {
-        var compositeObservedArea = GetCompositeObservedArea();
+        var compositeObservedArea = FogOfWarController.GetCompositeObservedArea();
         var observedAreaWidth = compositeObservedArea.GetLength(1);
         var observedAreaHeight = compositeObservedArea.GetLength(0);
-
         // Initial pass to paint wall tiles black
         for (int y = 0; y < WorldGenerator.Instance.height; y++)
         {
@@ -88,6 +70,22 @@ public class Pomdp : MonoBehaviour
         {
             for (int startY = 0; startY <= WorldGenerator.Instance.height - observedAreaHeight; startY++)
             {
+                for (var j = 0; j < observedAreaHeight; j++)
+                {
+                    for (var i = 0; i < observedAreaWidth; i++)
+                    {
+                        var x = startX + i;
+                        var y = startY + j;
+
+                        var mapTile = WorldGenerator.Instance.Map[y, x];
+                        if (mapTile != WorldGenerator.Instance.wallTile)
+                        {
+                            WorldMapController.Instance.UpdateWorldMapTexture(new Vector3(x, y, 0), Color.magenta);
+                        }
+                    }
+                }
+
+                yield return new WaitForSeconds(0.05f);  // Delay for visualization. Adjust time as needed.
                 bool isMismatched = false;
 
                 // Check for mismatches in the subsection
