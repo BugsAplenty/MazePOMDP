@@ -168,16 +168,14 @@ public class FogOfWarController : MonoBehaviour
         maxY = Math.Min(maxY, bounds.yMax);
         // Display bounds of observed area
         // Debug.Log("Observed Area Bounds: " + minX + ", " + minY + ", " + maxX + ", " + maxY);
-        return new BoundsInt(minX, minY, 0, maxX - minX + 1, maxY - minY + 1, 1);
+        return new BoundsInt(minX, minY, 0, maxX - minX, maxY - minY, 1);
     }
 
     private TileBase[,] GetObservedArea()
     {
         var bounds = GetObservedBounds();
-        // DrawDebugRectangle(bounds, Color.yellow);
-
         // Create a 2D array of TileBase
-        var tileArray = new TileBase[bounds.size.y + 1, bounds.size.x + 1];
+        var tileArray = new TileBase[bounds.size.y+1, bounds.size.x+1];
 
         // Copy the tiles from the revealed area of the overlayTilemap to the tileArray
         for (var x = bounds.xMin; x <= bounds.xMax; x++)
@@ -187,10 +185,12 @@ public class FogOfWarController : MonoBehaviour
                 var pos = new Vector3Int(x, y, 0);
                 var tile = overlayTilemap.GetTile(pos);
                 // Index tileArray at relative position to the bounds
-                tileArray[y - bounds.yMin, x - bounds.xMin] = tile;
+                var tilePosX = x - bounds.xMin;
+                var tilePosY = y - bounds.yMin;
+                tileArray[tilePosY, tilePosX] = tile;
             }
         }
-
+        DrawDebugRectangle(bounds, Color.yellow);
         return tileArray;
     }
     public static TileBase[,] GetCompositeObservedArea()

@@ -3,7 +3,7 @@ using System;
 
 public class GameManager : MonoBehaviour
 {
-    public static GameManager Instance { get; private set; }
+    private static GameManager Instance { get; set; }
 
     public GameObject player;
     public int[,] BeliefMap;
