@@ -127,7 +127,18 @@ public class FogOfWarController : MonoBehaviour
     }
 
 
+    private void DrawDebugRectangle(BoundsInt bounds, Color color)
+    {
+        Vector3 topLeft = overlayTilemap.CellToWorld(new Vector3Int(bounds.xMin, bounds.yMax, 0));
+        Vector3 topRight = overlayTilemap.CellToWorld(new Vector3Int(bounds.xMax, bounds.yMax, 0));
+        Vector3 bottomLeft = overlayTilemap.CellToWorld(new Vector3Int(bounds.xMin, bounds.yMin, 0));
+        Vector3 bottomRight = overlayTilemap.CellToWorld(new Vector3Int(bounds.xMax, bounds.yMin, 0));
 
+        Debug.DrawLine(topLeft, topRight, color, 5f, false);
+        Debug.DrawLine(topRight, bottomRight, color, 5f, false);
+        Debug.DrawLine(bottomRight, bottomLeft, color, 5f, false);
+        Debug.DrawLine(bottomLeft, topLeft, color, 5f, false);
+    }
 
     private BoundsInt GetObservedBounds()
     {
@@ -165,13 +176,13 @@ public class FogOfWarController : MonoBehaviour
         maxY = Math.Min(maxY, bounds.yMax);
         // Display bounds of observed area
         // Debug.Log("Observed Area Bounds: " + minX + ", " + minY + ", " + maxX + ", " + maxY);
-        return new BoundsInt(minX, minY, 0, maxX - minX, maxY - minY, 1);
+        return new BoundsInt(minX, minY, 0, maxX - minX + 1, maxY - minY + 1, 1);
     }
 
     public TileBase[,] GetObservedArea()
     {
-        // Get the bounds of the revealed area
         var bounds = GetObservedBounds();
+        DrawDebugRectangle(bounds, Color.yellow);
 
         // Create a 2D array of TileBase
         var tileArray = new TileBase[bounds.size.x + 1, bounds.size.y + 1];
