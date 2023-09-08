@@ -177,7 +177,7 @@ public class FogOfWarController : MonoBehaviour
         // DrawDebugRectangle(bounds, Color.yellow);
 
         // Create a 2D array of TileBase
-        var tileArray = new TileBase[bounds.size.x + 1, bounds.size.y + 1];
+        var tileArray = new TileBase[bounds.size.y + 1, bounds.size.x + 1];
 
         // Copy the tiles from the revealed area of the overlayTilemap to the tileArray
         for (var x = bounds.xMin; x <= bounds.xMax; x++)
@@ -187,23 +187,22 @@ public class FogOfWarController : MonoBehaviour
                 var pos = new Vector3Int(x, y, 0);
                 var tile = overlayTilemap.GetTile(pos);
                 // Index tileArray at relative position to the bounds
-                tileArray[x - bounds.xMin, y - bounds.yMin] = tile;
+                tileArray[y - bounds.yMin, x - bounds.xMin] = tile;
             }
         }
 
         return tileArray;
     }
     public static TileBase[,] GetCompositeObservedArea()
-    // Returns a 2D array of TileBase that changes light tiles to the corresponding tiles in the world map
     {
         var fogObservedArea = Instance.GetObservedArea();
         var width = fogObservedArea.GetLength(1);
         var height = fogObservedArea.GetLength(0);
         var compositeObservedArea = new TileBase[height, width];
 
-        for (var y = 0; y < height; y++)
+        for (var x = 0; x < width; x++)
         {
-            for (var x = 0; x < width; x++)
+            for (var y = 0; y < height; y++)
             {
                 if (fogObservedArea[y, x] != Instance.darkTile)
                 {
@@ -211,10 +210,8 @@ public class FogOfWarController : MonoBehaviour
                 }
             }
         }
-
         return compositeObservedArea;
     }
-
 }
 
     
