@@ -718,6 +718,7 @@ GameObject:
   - component: {fileID: 1113261984}
   - component: {fileID: 1113261983}
   - component: {fileID: 1113261982}
+  - component: {fileID: 1113261985}
   m_Layer: 5
   m_Name: WorldMap
   m_TagString: Untagged
@@ -789,13 +790,26 @@ MonoBehaviour:
   m_GameObject: {fileID: 1113261980}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: fa8a7b37272f0c04c8d74c0128cd078c, type: 3}
+  m_Script: {fileID: 11500000, guid: 41dd89bbd9272384695b32c16168803b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  worldCamera: {fileID: 1589003809}
-  textureWidth: 0
-  textureHeight: 0
-  rawImage: {fileID: 0}
+  WorldTileMap: {fileID: 863486892}
+  playerPosition: {fileID: 0}
+--- !u!114 &1113261985
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1113261980}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 70eb8b494f5c4824480220526fb6b5d4, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  ignoreMask:
+    serializedVersion: 2
+    m_Bits: 72
 --- !u!1 &1320608552
 GameObject:
   m_ObjectHideFlags: 0

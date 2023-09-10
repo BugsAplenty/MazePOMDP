@@ -41,4 +41,9 @@ public class MiniMapCamera : MonoBehaviour
             cam.orthographicSize = (mapSize.x / 2) / cam.aspect;
         }
     }
+
+    private void Update()
+    {
+        
+    }
 }
