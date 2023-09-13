@@ -168,7 +168,7 @@ public class FogOfWarController : MonoBehaviour
         maxY = Math.Min(maxY, bounds.yMax);
         // Display bounds of observed area
         // Debug.Log("Observed Area Bounds: " + minX + ", " + minY + ", " + maxX + ", " + maxY);
-        return new BoundsInt(minX, minY, 0, maxX - minX, maxY - minY, 1);
+        return new BoundsInt(minX, minY, 0, maxX - minX + 1, maxY - minY + 1, 1);
     }
 
     private TileBase[,] GetObservedArea()
@@ -184,6 +184,8 @@ public class FogOfWarController : MonoBehaviour
             {
                 var pos = new Vector3Int(x, y, 0);
                 var tile = overlayTilemap.GetTile(pos);
+                // Ignore null tiles
+                if (tile == null) continue;
                 // Index tileArray at relative position to the bounds
                 var tilePosX = x - bounds.xMin;
                 var tilePosY = y - bounds.yMin;
@@ -193,6 +195,7 @@ public class FogOfWarController : MonoBehaviour
         DrawDebugRectangle(bounds, Color.yellow);
         return tileArray;
     }
+    
     public static TileBase[,] GetCompositeObservedArea()
     {
         var fogObservedArea = Instance.GetObservedArea();
