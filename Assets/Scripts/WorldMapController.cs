@@ -104,11 +104,11 @@ public class WorldMapController : MonoBehaviour
         rawImage.texture = _texture2D;
     }
 
-    public void PaintWallTilesBlack()
+    public static void PaintWallTilesBlack()
     {
-        for (int y = 0; y < WorldGenerator.Instance.height; y++)
+        for (var y = 0; y < WorldGenerator.Instance.height; y++)
         {
-            for (int x = 0; x < WorldGenerator.Instance.width; x++)
+            for (var x = 0; x < WorldGenerator.Instance.width; x++)
             {
                 if (WorldGenerator.Instance.Map[y, x] == WorldGenerator.Instance.wallTile)
                 {

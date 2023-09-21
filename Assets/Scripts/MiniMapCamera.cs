@@ -5,7 +5,7 @@ public class MiniMapCamera : MonoBehaviour
     Camera cam;
     public LayerMask ignoreMask; // Assign this in the inspector to include both Player and Fog of War layers
 
-    void Start()
+    private void Start()
     {
         cam = GetComponent<Camera>();
         
@@ -15,19 +15,19 @@ public class MiniMapCamera : MonoBehaviour
         AdjustCameraToMap();
     }
 
-    void AdjustCameraToMap()
+    private void AdjustCameraToMap()
     {
         // Calculate the bottom-left and top-right corners based on the new center information
-        Vector2 bottomLeftCorner = new Vector2(-WorldGenerator.Instance.width / 2, -WorldGenerator.Instance.height / 2);
-        Vector2 topRightCorner = new Vector2(WorldGenerator.Instance.width / 2, WorldGenerator.Instance.height / 2);
+        var bottomLeftCorner = new Vector2(-WorldGenerator.Instance.width / 2, -WorldGenerator.Instance.height / 2);
+        var topRightCorner = new Vector2(WorldGenerator.Instance.width / 2, WorldGenerator.Instance.height / 2);
 
-        Vector2 mapSize = new Vector2(
+        var mapSize = new Vector2(
             topRightCorner.x - bottomLeftCorner.x,
             topRightCorner.y - bottomLeftCorner.y
         );
 
         // Center the camera to the middle of the map
-        Vector2 mapCenter = new Vector2(
+        var mapCenter = new Vector2(
             (topRightCorner.x + bottomLeftCorner.x) / 2,
             (topRightCorner.y + bottomLeftCorner.y) / 2
         );
@@ -38,7 +38,7 @@ public class MiniMapCamera : MonoBehaviour
         cam.orthographicSize = mapSize.y / 2;
         if (cam.aspect < 1.0f && mapSize.x / mapSize.y > cam.aspect)
         {
-            cam.orthographicSize = (mapSize.x / 2) / cam.aspect;
+            cam.orthographicSize = mapSize.x / 2 / cam.aspect;
         }
     }
 }

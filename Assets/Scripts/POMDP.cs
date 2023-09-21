@@ -1,12 +1,9 @@
 using System;
 using System.Collections;
 using UnityEngine;
-using UnityEngine.Tilemaps;
 
 public class Pomdp : MonoBehaviour
 {
-    private const int MaxBelief = 100; 
-
     public WorldMapController worldMapController;
     private Texture2D _beliefTexture;
 
@@ -45,61 +42,55 @@ public class Pomdp : MonoBehaviour
 
     private void PlayerController_PlayerMoved(object sender, EventArgs e)
     {
-        StartCoroutine(UpdateBeliefMap());
+        UpdateBeliefMap();
     }
     
-    
-    private static IEnumerator UpdateBeliefMap()
-{
-    var compositeObservedArea = FogOfWarController.GetCompositeObservedArea();
-    var observedAreaWidth = compositeObservedArea.GetLength(1);
-    var observedAreaHeight = compositeObservedArea.GetLength(0);
-    WorldMapController.Instance.PaintWallTilesBlack();
-
-    for (var startX = 0; startX <= WorldGenerator.Instance.width - observedAreaWidth; startX++)
+    private void UpdateBeliefMap()
     {
-        for (var startY = 0; startY <= WorldGenerator.Instance.height - observedAreaHeight; startY++)
+        var compositeObservedArea = FogOfWarController.GetCompositeObservedArea();
+        var observedAreaWidth = compositeObservedArea.GetLength(1);
+        var observedAreaHeight = compositeObservedArea.GetLength(0);
+        var playerRelPos = FogOfWarController.Instance.GetPlayerRelativePosition();
+
+        for (var mapY = 0; mapY < WorldGenerator.Instance.height; mapY++)
         {
-            int matchCount = 0;
-            int totalRevealedTileCount = 0;
-
-            for (var j = 0; j < observedAreaHeight; j++)
+            for (var mapX = 0; mapX < WorldGenerator.Instance.width; mapX++)
             {
-                for (var i = 0; i < observedAreaWidth; i++)
+                int startX = mapX - playerRelPos.x;
+                int startY = mapY - playerRelPos.y;
+                int endX = startX + observedAreaWidth - 1;
+                int endY = startY + observedAreaHeight - 1;
+
+                int matchCount = 0;
+                int totalRevealedTileCount = 0;
+
+                for (int y = startY, j = 0; y <= endY && j < observedAreaHeight; y++, j++)
                 {
-                    var x = startX + i;
-                    var y = startY + j;
-
-                    var observedTile = compositeObservedArea[j, i];
-                    var mapTile = WorldGenerator.Instance.Map[y, x];
-
-                    // We're only interested in revealed tiles
-                    if (observedTile != FogOfWarController.Instance.darkTile)
+                    for (int x = startX, i = 0; x <= endX && i < observedAreaWidth; x++, i++)
                     {
+                        if (x < 0 || x >= WorldGenerator.Instance.width || y < 0 || y >= WorldGenerator.Instance.height) continue;
+
+                        var observedTile = compositeObservedArea[j, i];
+                        var mapTile = WorldGenerator.Instance.Map[y, x];
+
+                        if (observedTile == FogOfWarController.Instance.darkTile || observedTile == null) continue;
                         totalRevealedTileCount++;
+
                         if (observedTile == mapTile)
                         {
                             matchCount++;
                         }
                     }
                 }
+
+                float matchRatio = totalRevealedTileCount == 0 ? 0 : (float)matchCount / totalRevealedTileCount;
+
+                Color paintColor = Color.Lerp(Color.red, Color.green, matchRatio);
+
+                WorldMapController.Instance.UpdateWorldMapTexture(new Vector3(mapX, mapY, 0), paintColor);
             }
-
-            // Determine color to paint based on percentage of matches
-            float matchPercentage = (float)matchCount / totalRevealedTileCount;
-            Color paintColor = new Color(1.0f - matchPercentage, matchPercentage, 0); // Red value decreases and green value increases with match percentage
-
-            // Set the color for the center of the subsection
-            var centerX = startX + observedAreaWidth / 2;
-            var centerY = startY + observedAreaHeight / 2;
-            WorldMapController.Instance.UpdateWorldMapTexture(new Vector3(centerX, centerY, 0), paintColor);
-
-            yield return new WaitForSeconds(0.05f);  // Delay for visualization. Adjust time as needed.
         }
+
+        WorldMapController.PaintWallTilesBlack();
     }
-}
-
-
-
-
 }

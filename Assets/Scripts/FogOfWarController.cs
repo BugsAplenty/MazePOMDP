@@ -170,17 +170,49 @@ public class FogOfWarController : MonoBehaviour
         // Debug.Log("Observed Area Bounds: " + minX + ", " + minY + ", " + maxX + ", " + maxY);
         return new BoundsInt(minX, minY, 0, maxX - minX + 1, maxY - minY + 1, 1);
     }
+    public Vector2Int GetPlayerRelativePosition()
+    {
+        var playerTilePos = overlayTilemap.WorldToCell(playerController.transform.position);
+        var bounds = GetObservedBounds();
+        var playerRelX = (playerTilePos.x - bounds.xMin) / (float)bounds.size.x;
+        var playerRelY = (playerTilePos.y - bounds.yMin) / (float)bounds.size.y;
+
+        // Convert the relative float values into int by scaling.
+        var scaledX = Mathf.RoundToInt(playerRelX * WorldGenerator.Instance.width);
+        var scaledY = Mathf.RoundToInt(playerRelY * WorldGenerator.Instance.height);
+
+        return new Vector2Int(scaledX, scaledY);
+    }
 
     private TileBase[,] GetObservedArea()
     {
         var bounds = GetObservedBounds();
+
+        var playerTilePos = overlayTilemap.WorldToCell(playerController.transform.position);
+        var mapBounds = WorldGenerator.Instance.tilemap.cellBounds;
+        var playerRel = GetPlayerRelativePosition();
+
+        if (bounds.size.x >= mapBounds.size.x)
+        {
+            var offset = Mathf.FloorToInt(playerRel.x * bounds.size.x);
+            bounds.xMin = Mathf.Clamp(playerTilePos.x - offset, mapBounds.xMin, mapBounds.xMax - bounds.size.x);
+            bounds.xMax = bounds.xMin + bounds.size.x;
+        }
+
+        if (bounds.size.y >= mapBounds.size.y)
+        {
+            var offset = Mathf.FloorToInt(playerRel.y * bounds.size.y);
+            bounds.yMin = Mathf.Clamp(playerTilePos.y - offset, mapBounds.yMin, mapBounds.yMax - bounds.size.y);
+            bounds.yMax = bounds.yMin + bounds.size.y;
+        }
+
         // Create a 2D array of TileBase
-        var tileArray = new TileBase[bounds.size.y+1, bounds.size.x+1];
+        var tileArray = new TileBase[bounds.size.y, bounds.size.x];
 
         // Copy the tiles from the revealed area of the overlayTilemap to the tileArray
-        for (var x = bounds.xMin; x <= bounds.xMax; x++)
+        for (var x = bounds.xMin; x < bounds.xMax; x++)
         {
-            for (var y = bounds.yMin; y <= bounds.yMax; y++)
+            for (var y = bounds.yMin; y < bounds.yMax; y++)
             {
                 var pos = new Vector3Int(x, y, 0);
                 var tile = overlayTilemap.GetTile(pos);
