@@ -2,7 +2,7 @@ using System.Collections;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class WorldMapController : MonoBehaviour
+public class WorldMapController : Singleton<WorldMapController>
 {
     [SerializeField] private Camera worldCamera;
     public int textureWidth;
@@ -10,20 +10,8 @@ public class WorldMapController : MonoBehaviour
     public RawImage rawImage;
     private Texture2D _texture2D;
     private RenderTexture _renderTexture;
-    public static WorldMapController Instance { get; private set; }
 
-    private void Awake()
-    {
-        if (Instance == null)
-        {
-            Instance = this;
-        }
-        else
-        {
-            Destroy(gameObject);
-        }
-    }
-
+    
     private void Start()
     {
         textureWidth = WorldGenerator.Instance.width;
@@ -116,5 +104,22 @@ public class WorldMapController : MonoBehaviour
                 }
             }
         }
+    }
+
+    public static Vector3Int WorldToMapPosition(Vector3Int worldPos)
+    {
+        var mapPos = new Vector3Int(worldPos.x + WorldGenerator.Instance.width / 2, worldPos.y + WorldGenerator.Instance.height / 2, 0);
+        return mapPos;
+    }
+    public static Vector3Int GetPlayerMapPosition()
+    // Converts the player's world position to the map position
+    {
+        return WorldToMapPosition(PlayerController.Instance.currentCellPosition);
+    }
+    // A function that returns the player's position relative to the world map
+    public static void VisualizePlayerPosition()
+    {
+        var playerPos = GetPlayerMapPosition();
+        Instance.UpdateWorldMapTexture(playerPos, Color.blue);
     }
 }

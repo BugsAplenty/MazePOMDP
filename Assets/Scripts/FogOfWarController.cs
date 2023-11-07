@@ -2,32 +2,14 @@ using System;
 using UnityEngine;
 using UnityEngine.Tilemaps;
 
-public class FogOfWarController : MonoBehaviour
+public class FogOfWarController : Singleton<FogOfWarController>
 {
-    public static FogOfWarController Instance { get; private set; }
     public Tilemap overlayTilemap;
     public Tile darkTile;
     public Tile lightTile;
     public float overlayHeight = 1f; // new variable
-    public Component playerController;
 
     
-    private void Awake()
-    {
-        if (Instance == null)
-        {
-            Instance = this;
-        }
-        else
-        {
-            Destroy(gameObject);
-        }
-    }
-    private void Start()
-    {
-        // find object with tag "player"
-        playerController = GameObject.FindGameObjectWithTag("Player").GetComponent<PlayerController>();
-    }
     public void SetupOverlay(Tilemap mainMap)
     {
         // Ensure overlay is at origin
@@ -140,7 +122,7 @@ public class FogOfWarController : MonoBehaviour
     private BoundsInt GetObservedBounds()
     {
         var bounds = overlayTilemap.cellBounds;
-        var playerTilePos = overlayTilemap.WorldToCell(playerController.transform.position);
+        var playerTilePos = overlayTilemap.WorldToCell(PlayerController.Instance.currentCellPosition);
 
         var minX = int.MaxValue;
         var minY = int.MaxValue;
@@ -172,7 +154,7 @@ public class FogOfWarController : MonoBehaviour
     }
     public Vector2Int GetPlayerRelativePosition()
     {
-        var playerTilePos = overlayTilemap.WorldToCell(playerController.transform.position);
+        var playerTilePos = overlayTilemap.WorldToCell(PlayerController.Instance.currentCellPosition);
         var bounds = GetObservedBounds();
         var playerRelX = (playerTilePos.x - bounds.xMin) / (float)bounds.size.x;
         var playerRelY = (playerTilePos.y - bounds.yMin) / (float)bounds.size.y;
@@ -188,7 +170,7 @@ public class FogOfWarController : MonoBehaviour
     {
         var bounds = GetObservedBounds();
 
-        var playerTilePos = overlayTilemap.WorldToCell(playerController.transform.position);
+        var playerTilePos = overlayTilemap.WorldToCell(PlayerController.Instance.currentCellPosition);
         var mapBounds = WorldGenerator.Instance.tilemap.cellBounds;
         var playerRel = GetPlayerRelativePosition();
 
@@ -228,6 +210,10 @@ public class FogOfWarController : MonoBehaviour
         return tileArray;
     }
     
+    /// <summary>
+    /// Returns a 2D array of TileBase that represents the composite of the fog of war and the main map.
+    /// </summary>
+    /// <returns></returns>
     public static TileBase[,] GetCompositeObservedArea()
     {
         var fogObservedArea = Instance.GetObservedArea();

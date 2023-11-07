@@ -1,34 +1,28 @@
 using UnityEngine;
-using System;
 
-public class GameManager : MonoBehaviour
+public class GameManager : Singleton<GameManager>
 {
-    private static GameManager Instance { get; set; }
-
     public GameObject player;
-    public int[,] BeliefMap;
-    public event Action PlayerSpawned;
-
-    private void Awake()
-    {
-        if (Instance == null)
-        {
-            Instance = this;
-        }
-        else
-        {
-            Destroy(gameObject);
-        }
-    }
-
+    
     private void Start()
     {
-        BeliefMap = new int[WorldGenerator.Instance.width, WorldGenerator.Instance.height];
+        if (WorldGenerator.Instance == null)
+        {
+            Debug.LogError("WorldGenerator instance is not found!");
+            return;
+        }
+
         WorldGenerator.Instance.GenerateWorld();
+
+        if (FogOfWarController.Instance == null)
+        {
+            Debug.LogError("FogOfWarController instance is not found!");
+            return;
+        }
+
         FogOfWarController.Instance.SetupOverlay(WorldGenerator.Instance.mainMap);
         SpawnPlayer(); 
         RandomizePlayerLocation();
-        PlayerSpawned?.Invoke();
     }
 
     private void SpawnPlayer()

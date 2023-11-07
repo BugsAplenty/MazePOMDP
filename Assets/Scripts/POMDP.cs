@@ -2,26 +2,10 @@ using System;
 using System.Collections;
 using UnityEngine;
 
-public class Pomdp : MonoBehaviour
+public class Pomdp : Singleton<Pomdp>
 {
     public WorldMapController worldMapController;
     private Texture2D _beliefTexture;
-
-    private static Pomdp Instance { get; set; } // Singleton pattern
-    private int[,] BeliefMap { get; set; } 
-
-    private void Awake()
-    {
-        if (Instance == null)
-        {
-            Instance = this;
-            BeliefMap = new int[WorldGenerator.Instance.width, WorldGenerator.Instance.height];
-        }
-        else
-        {
-            Destroy(gameObject);
-        }
-    }
 
     private void Start()
     {
@@ -44,38 +28,44 @@ public class Pomdp : MonoBehaviour
     {
         UpdateBeliefMap();
     }
-    
+
+
     private void UpdateBeliefMap()
     {
         var compositeObservedArea = FogOfWarController.GetCompositeObservedArea();
         var observedAreaWidth = compositeObservedArea.GetLength(1);
         var observedAreaHeight = compositeObservedArea.GetLength(0);
-        var playerRelPos = FogOfWarController.Instance.GetPlayerRelativePosition();
+        var playerRelPos = WorldMapController.GetPlayerMapPosition();
 
         for (var mapY = 0; mapY < WorldGenerator.Instance.height; mapY++)
         {
             for (var mapX = 0; mapX < WorldGenerator.Instance.width; mapX++)
             {
-                int startX = mapX - playerRelPos.x;
-                int startY = mapY - playerRelPos.y;
-                int endX = startX + observedAreaWidth - 1;
-                int endY = startY + observedAreaHeight - 1;
+                var startX = mapX - playerRelPos.x;
+                var startY = mapY - playerRelPos.y;
+                var endX = startX + observedAreaWidth - 1;
+                var endY = startY + observedAreaHeight - 1;
 
-                int matchCount = 0;
-                int totalRevealedTileCount = 0;
+                var matchCount = 0;
+                var totalRevealedTileCount = 0;
 
                 for (int y = startY, j = 0; y <= endY && j < observedAreaHeight; y++, j++)
                 {
                     for (int x = startX, i = 0; x <= endX && i < observedAreaWidth; x++, i++)
                     {
+                        // Check if the current tile is within the bounds of the world.
                         if (x < 0 || x >= WorldGenerator.Instance.width || y < 0 || y >= WorldGenerator.Instance.height) continue;
 
                         var observedTile = compositeObservedArea[j, i];
                         var mapTile = WorldGenerator.Instance.Map[y, x];
 
+                        // Skip tiles that are unobserved or null.
                         if (observedTile == FogOfWarController.Instance.darkTile || observedTile == null) continue;
+
+                        // Count this tile as revealed.
                         totalRevealedTileCount++;
 
+                        // If the observed tile matches the map tile, increase the match count.
                         if (observedTile == mapTile)
                         {
                             matchCount++;
@@ -83,14 +73,21 @@ public class Pomdp : MonoBehaviour
                     }
                 }
 
-                float matchRatio = totalRevealedTileCount == 0 ? 0 : (float)matchCount / totalRevealedTileCount;
+                // Calculate the match ratio.
+                var matchRatio = totalRevealedTileCount == 0 ? 0 : (float)matchCount / totalRevealedTileCount;
 
-                Color paintColor = Color.Lerp(Color.red, Color.green, matchRatio);
+                // Interpolate the color based on the match ratio.
+                var paintColor = Color.Lerp(Color.red, Color.green, matchRatio);
 
+                // Update the belief texture with the interpolated color.
                 WorldMapController.Instance.UpdateWorldMapTexture(new Vector3(mapX, mapY, 0), paintColor);
             }
         }
 
+        // After updating all tiles, ensure the belief texture reflects the changes.
+        _beliefTexture.Apply();
+
+        // Paint any permanent, non-changeable features such as walls.
         WorldMapController.PaintWallTilesBlack();
     }
 }

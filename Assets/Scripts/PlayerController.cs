@@ -3,9 +3,8 @@ using System.Collections;
 using UnityEngine;
 using UnityEngine.Serialization;
 
-public class PlayerController : MonoBehaviour
+public class PlayerController : Singleton<PlayerController>
 {
-    public static PlayerController Instance { get; private set; }
 
     public int clearRadius = 3;
     public float moveSpeed = 5f;
@@ -15,19 +14,6 @@ public class PlayerController : MonoBehaviour
     private Rigidbody2D _rb;
     public Vector3Int currentCellPosition;
     private bool _isMoving;
-
-    private void Awake()
-    {
-        if (Instance == null)
-        {
-            Instance = this;
-            // DontDestroyOnLoad(gameObject);
-        }
-        else
-        {
-            Destroy(gameObject);
-        }
-    }
 
     private void Start()
     {
@@ -56,7 +42,7 @@ public class PlayerController : MonoBehaviour
             vertical = 0;
         }
 
-        var direction = new Vector3Int(horizontal, vertical, 0);
+        var direction = new Vector3Int(horizontal, vertical);
 
         // Calculate the new position
         var newPosition = currentCellPosition + direction;

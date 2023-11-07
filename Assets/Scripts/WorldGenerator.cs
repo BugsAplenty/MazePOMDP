@@ -2,9 +2,8 @@ using UnityEngine;
 using System.Collections.Generic;
 using UnityEngine.Tilemaps;
 
-public class WorldGenerator : MonoBehaviour
+public class WorldGenerator : Singleton<WorldGenerator>
 {
-    public static WorldGenerator Instance { get; private set; }
 
     public int width;
     public int height;
@@ -19,18 +18,6 @@ public class WorldGenerator : MonoBehaviour
     public Tilemap mainMap;
     public TileBase[,] Map;
 
-    private void Awake()
-    {
-        if (Instance == null)
-        {
-            Instance = this;
-            DontDestroyOnLoad(gameObject);
-        }
-        else
-        {
-            Destroy(gameObject);
-        }
-    }
     private void Start()
     {
         Map = new TileBase[height, width];
