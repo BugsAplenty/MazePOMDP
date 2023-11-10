@@ -552,8 +552,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3bebc270e5933a042ab33b0dfd026b38, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  width: 50
-  height: 50
+  width: 30
+  height: 30
   tilemap: {fileID: 863486892}
   wallTile: {fileID: 11400000, guid: 8e6168f015d2ff0489da8bc9fd5fee96, type: 2}
   floorTile: {fileID: 11400000, guid: 1d85fd7e329016247a2a91b60f16b056, type: 2}
@@ -588,7 +588,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 34feebcfb810499fb8bc25fdb288feb3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  worldMapController: {fileID: 0}
 --- !u!1 &1026184683
 GameObject:
   m_ObjectHideFlags: 0

@@ -29,39 +29,40 @@ public class Pomdp : Singleton<Pomdp>
     }
 
 
-    private IEnumerator UpdateBeliefMap()
+    private static IEnumerator UpdateBeliefMap()
     {
-        var actualObservedArea = FogOfWarController.Instance.GetPlayerCompositeObservedArea();
 
-        for (var mapY = 0; mapY < WorldGenerator.Instance.height; mapY++)
+        for (var mapX = 0; mapX < WorldGenerator.Instance.width; mapX++)
         {
-            for (var mapX = 0; mapX < WorldGenerator.Instance.width; mapX++)
+            for (var mapY = 0; mapY < WorldGenerator.Instance.height; mapY++)
             {
                 // Get cell type from the world map
                 var cellType = WorldGenerator.Instance.Map[mapY, mapX];
                 // If the cell is a wall, skip it
                 if (cellType == WorldGenerator.Instance.wallTile) {
+                    WorldMapController.Instance.UpdateWorldMapTexture(new Vector3(mapX, mapY, 0), Color.black);
                     continue;
                 }
                 if (cellType != WorldGenerator.Instance.floorTile) continue;
                 // Convert the array indices to world coordinates
                 var worldPos = new Vector3Int(mapX - WorldGenerator.Instance.width / 2, mapY - WorldGenerator.Instance.height / 2, 0);
                 // Get a TileBase Array of the observed area if the player were in this cell
-                var observedAreaHypothesis = FogOfWarController.Instance.GetCompositeObservedAreaAround(worldPos);
+                var observedAreaHypothesis = FogOfWarController.Instance.GetObservedAreaAround(worldPos);
+                // Get actual observed area
+                var actualObservedArea = FogOfWarController.Instance.GetPlayerObservedArea();
                 // Get the observed area around the actual player
                 // Compare the two arrays and get a score
                 var score = MatchScore(observedAreaHypothesis, actualObservedArea);
                 // Create a color based on a lerp between red and green based on the score
-                var color = Color.Lerp(Color.red, Color.green, (float)score / (observedAreaHypothesis.GetLength(0) * observedAreaHypothesis.GetLength(1)));
+                var color = Color.Lerp(Color.red, Color.green, score / (observedAreaHypothesis.GetLength(0) * observedAreaHypothesis.GetLength(1)));
                 // Update the belief map texture
                 WorldMapController.Instance.UpdateWorldMapTexture(new Vector3Int(mapX, mapY, 0), color);
-                //
             }
             yield return null;
         }
     }
 
-    private static int MatchScore(TileBase[,] observedAreaHypothesis, TileBase[,] actualObservedArea)
+    private static float MatchScore(TileBase[,] observedAreaHypothesis, TileBase[,] actualObservedArea)
     {
         // Return a score based on the number of non-dark tiles that match between the two arrays
         var score = 0;

@@ -9,21 +9,21 @@ public class FogOfWarController : Singleton<FogOfWarController>
     public Tile lightTile;
     public float overlayHeight = 1f; // new variable
 
-    
+
     public void SetupOverlay(Tilemap mainMap)
     {
         // Ensure overlay is at origin
         overlayTilemap.transform.localPosition = new Vector3(0, 0, overlayHeight);
 
         var bounds = mainMap.cellBounds;
-        var allTiles = mainMap.GetTilesBlock(bounds);
 
         for (var x = 0; x < bounds.size.x; x++)
         {
             for (var y = 0; y < bounds.size.y; y++)
             {
                 var pos = new Vector3Int(x + bounds.xMin, y + bounds.yMin, 0);
-                overlayTilemap.SetTile(pos, darkTile);  // set dark tile regardless of the main map's tile at this position
+                overlayTilemap.SetTile(pos,
+                    darkTile); // set dark tile regardless of the main map's tile at this position
             }
         }
     }
@@ -67,21 +67,21 @@ public class FogOfWarController : Singleton<FogOfWarController>
         var sy = y0 < y1 ? 1 : -1;
         var err = (dx > dy ? dx : -dy) / 2;
 
-        var wallEncountered = false;  // flag to check if a wall tile has been encountered
+        var wallEncountered = false; // flag to check if a wall tile has been encountered
 
         while (true)
         {
             var checkPos = new Vector3Int(x0, y0, 0);
-        
+
             if (WorldGenerator.Instance.TileIsWall(checkPos))
             {
-                if(wallEncountered)  // if we've already encountered a wall, then exit after illuminating this tile
+                if (wallEncountered) // if we've already encountered a wall, then exit after illuminating this tile
                     return true;
                 wallEncountered = true;
             }
             else
             {
-                wallEncountered = false;  // reset if it's not a wall
+                wallEncountered = false; // reset if it's not a wall
             }
 
             if (x0 == x1 && y0 == y1)
@@ -122,7 +122,7 @@ public class FogOfWarController : Singleton<FogOfWarController>
     private BoundsInt GetObservedBounds()
     {
         var bounds = overlayTilemap.cellBounds;
-        var playerTilePos = overlayTilemap.WorldToCell(PlayerController.Instance.currentCellPosition);
+        var playerTilePos = PlayerController.Instance.currentCellPosition;
 
         var minX = int.MaxValue;
         var minY = int.MaxValue;
@@ -152,78 +152,61 @@ public class FogOfWarController : Singleton<FogOfWarController>
         // Debug.Log("Observed Area Bounds: " + minX + ", " + minY + ", " + maxX + ", " + maxY);
         return new BoundsInt(minX, minY, 0, maxX - minX + 1, maxY - minY + 1, 1);
     }
-    public Vector2Int GetPlayerRelativePosition()
+
+
+    public TileBase[,] GetPlayerObservedArea()
     {
-        var playerTilePos = overlayTilemap.WorldToCell(PlayerController.Instance.currentCellPosition);
         var bounds = GetObservedBounds();
-        var playerRelX = (playerTilePos.x - bounds.xMin) / (float)bounds.size.x;
-        var playerRelY = (playerTilePos.y - bounds.yMin) / (float)bounds.size.y;
-
-        // Convert the relative float values into int by scaling.
-        var scaledX = Mathf.RoundToInt(playerRelX * WorldGenerator.Instance.width);
-        var scaledY = Mathf.RoundToInt(playerRelY * WorldGenerator.Instance.height);
-
-        return new Vector2Int(scaledX, scaledY);
-    }
-
-    
-    /// <summary>
-    /// Returns a 2D array of TileBase that represents the composite of the fog of war and the main map.
-    /// </summary>
-    /// <returns></returns>
-    public  TileBase[,] GetPlayerCompositeObservedArea()
-    {
-        var playerTilePos = overlayTilemap.WorldToCell(PlayerController.Instance.currentCellPosition);
-        return GetCompositeObservedAreaAround(playerTilePos);
-    }
-
-    public TileBase[,] GetCompositeObservedAreaAround(Vector3Int tilePos)
-    {
-        var fogObservedArea = Instance.GetObservedAreaAround(tilePos);
-        var width = fogObservedArea.GetLength(1);
-        var height = fogObservedArea.GetLength(0);
-
-        for (var x = 0; x < width; x++)
+        // Create a 2D array of TileBase
+        var tileArray = new TileBase[bounds.size.y, bounds.size.x];
+        // Copy the tiles from the revealed area of the overlayTilemap to the tileArray
+        for (var x = bounds.xMin; x < bounds.xMax; x++)
         {
-            for (var y = 0; y < height; y++)
+            for (var y = bounds.yMin; y < bounds.yMax; y++)
             {
-                if (fogObservedArea[y, x] != Instance.darkTile)
+                var pos = new Vector3Int(x, y, 0);
+                var tile = overlayTilemap.GetTile(pos);
+                if (tile == Instance.lightTile)
                 {
-                    fogObservedArea[y, x] = WorldGenerator.Instance.Map[y, x];
+                    // If the tile is light, set it to the equivalent tile from the world map
+                    tile = WorldGenerator.Instance.tilemap.GetTile(pos);
                 }
+                // Index tileArray at relative position to the bounds
+                var tilePosX = x - bounds.xMin;
+                var tilePosY = y - bounds.yMin;
+                tileArray[tilePosY, tilePosX] = tile;
             }
         }
-        return fogObservedArea;
+        DrawDebugRectangle(bounds, Color.yellow);
+        return tileArray;
     }
+
 
     public TileBase[,] GetObservedAreaAround(Vector3Int tilePos)
     {
         var bounds = GetObservedBounds();
-        var boundsNew = new BoundsInt();
-        // Offset the bounds by the difference between the player's position and the tilePos
-        boundsNew.xMin = bounds.xMin + tilePos.x - PlayerController.Instance.currentCellPosition.x;
-        boundsNew.xMax = bounds.xMax + tilePos.x - PlayerController.Instance.currentCellPosition.x;
-        boundsNew.yMin = bounds.yMin + tilePos.y - PlayerController.Instance.currentCellPosition.y;
-        boundsNew.yMax = bounds.yMax + tilePos.y - PlayerController.Instance.currentCellPosition.y;
-        
+        var tileArray = new TileBase[bounds.size.y, bounds.size.x];
 
-        // Create a 2D array of TileBase
-        var tileArray = new TileBase[boundsNew.size.y, boundsNew.size.x];
-
-        // Copy the tiles from the revealed area of the overlayTilemap to the tileArray
+        var boundsNew = new BoundsInt
+        {
+            // Offset the bounds by the difference between the player's position and the tilePos
+            xMin = bounds.xMin + tilePos.x - PlayerController.Instance.currentCellPosition.x,
+            xMax = bounds.xMax + tilePos.x - PlayerController.Instance.currentCellPosition.x,
+            yMin = bounds.yMin + tilePos.y - PlayerController.Instance.currentCellPosition.y,
+            yMax = bounds.yMax + tilePos.y - PlayerController.Instance.currentCellPosition.y
+        };
         for (var x = boundsNew.xMin; x < boundsNew.xMax; x++)
         {
             for (var y = boundsNew.yMin; y < boundsNew.yMax; y++)
             {
                 var pos = new Vector3Int(x, y, 0);
-                var tile = overlayTilemap.GetTile(pos);
                 // Index tileArray at relative position to the bounds
                 var tilePosX = x - boundsNew.xMin;
                 var tilePosY = y - boundsNew.yMin;
-                tileArray[tilePosY, tilePosX] = tile;
+                tileArray[tilePosY, tilePosX] = WorldGenerator.Instance.tilemap.GetTile(pos);
             }
         }
-        DrawDebugRectangle(bounds, Color.yellow);
+
         return tileArray;
     }
 }
