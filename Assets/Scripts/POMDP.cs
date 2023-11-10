@@ -5,14 +5,12 @@ using UnityEngine.Tilemaps;
 
 public class Pomdp : Singleton<Pomdp>
 {
-    public WorldMapController worldMapController;
     private Texture2D _beliefTexture;
 
     private void Start()
     {
-        worldMapController = WorldMapController.Instance;
         _beliefTexture = new Texture2D(WorldGenerator.Instance.width, WorldGenerator.Instance.height);
-        worldMapController.rawImage.texture = _beliefTexture;
+        WorldMapController.Instance.rawImage.texture = _beliefTexture;
         _beliefTexture.filterMode = FilterMode.Point;
         for (var y = 0; y < _beliefTexture.height; y++)
         {
@@ -27,17 +25,17 @@ public class Pomdp : Singleton<Pomdp>
 
     private void PlayerController_PlayerMoved(object sender, EventArgs e)
     {
-        UpdateBeliefMap();
+        StartCoroutine(UpdateBeliefMap());
     }
 
 
-    private void UpdateBeliefMap()
+    private IEnumerator UpdateBeliefMap()
     {
         var actualObservedArea = FogOfWarController.Instance.GetPlayerCompositeObservedArea();
 
-        for (int mapY = 0; mapY < WorldGenerator.Instance.height; mapY++)
+        for (var mapY = 0; mapY < WorldGenerator.Instance.height; mapY++)
         {
-            for (int mapX = 0; mapX < WorldGenerator.Instance.width; mapX++)
+            for (var mapX = 0; mapX < WorldGenerator.Instance.width; mapX++)
             {
                 // Get cell type from the world map
                 var cellType = WorldGenerator.Instance.Map[mapY, mapX];
@@ -59,10 +57,11 @@ public class Pomdp : Singleton<Pomdp>
                 WorldMapController.Instance.UpdateWorldMapTexture(new Vector3Int(mapX, mapY, 0), color);
                 //
             }
+            yield return null;
         }
     }
 
-    private int MatchScore(TileBase[,] observedAreaHypothesis, TileBase[,] actualObservedArea)
+    private static int MatchScore(TileBase[,] observedAreaHypothesis, TileBase[,] actualObservedArea)
     {
         // Return a score based on the number of non-dark tiles that match between the two arrays
         var score = 0;
