@@ -92,34 +92,15 @@ public class WorldMapController : Singleton<WorldMapController>
         rawImage.texture = _texture2D;
     }
 
-    public static void PaintWallTilesBlack()
+    public void ResetWorldMap()
     {
-        for (var y = 0; y < WorldGenerator.Instance.height; y++)
+        for (var y = 0; y < _texture2D.height; y++)
         {
-            for (var x = 0; x < WorldGenerator.Instance.width; x++)
+            for (var x = 0; x < _texture2D.width; x++)
             {
-                if (WorldGenerator.Instance.Map[y, x] == WorldGenerator.Instance.wallTile)
-                {
-                    Instance.UpdateWorldMapTexture(new Vector3(x, y, 0), Color.black);
-                }
+                _texture2D.SetPixel(x, y, Color.gray);
             }
         }
-    }
-
-    public static Vector3Int WorldToMapPosition(Vector3Int worldPos)
-    {
-        var mapPos = new Vector3Int(worldPos.x + WorldGenerator.Instance.width / 2, worldPos.y + WorldGenerator.Instance.height / 2, 0);
-        return mapPos;
-    }
-    public static Vector3Int GetPlayerMapPosition()
-    // Converts the player's world position to the map position
-    {
-        return WorldToMapPosition(PlayerController.Instance.currentCellPosition);
-    }
-    // A function that returns the player's position relative to the world map
-    public static void VisualizePlayerPosition()
-    {
-        var playerPos = GetPlayerMapPosition();
-        Instance.UpdateWorldMapTexture(playerPos, Color.blue);
+        _texture2D.Apply();
     }
 }

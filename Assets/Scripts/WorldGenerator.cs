@@ -25,7 +25,7 @@ public class WorldGenerator : Singleton<WorldGenerator>
         {
             for (var x = 0; x < width; x++)
             {
-                Map[y, x] = (Random.value > 0.5f) ? wallTile : floorTile;
+                Map[y, x] = Random.value > 0.5f ? wallTile : floorTile;
             }
         }
         GenerateWorld();
@@ -262,5 +262,10 @@ public class WorldGenerator : Singleton<WorldGenerator>
             x < width-1 && _dungeon[x+1, y] == 1 && // Check right
             y > 0 && _dungeon[x, y-1] == 1 && // Check below
             y < height-1 && _dungeon[x, y+1] == 1;         // Check above
+    }
+
+    public void DestroyWorld()
+    {
+        tilemap.ClearAllTiles();
     }
 }
