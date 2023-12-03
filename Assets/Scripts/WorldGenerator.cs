@@ -20,6 +20,13 @@ public class WorldGenerator : Singleton<WorldGenerator>
 
     private void Start()
     {
+        //pull this out, should not be created at start because dimensions are not set yet!!
+        CreateBaseTileMap();
+        //GenerateWorld();
+    }
+
+    private void CreateBaseTileMap()
+    {
         Map = new TileBase[height, width];
         for (var y = 0; y < height; y++)
         {
@@ -28,8 +35,8 @@ public class WorldGenerator : Singleton<WorldGenerator>
                 Map[y, x] = Random.value > 0.5f ? wallTile : floorTile;
             }
         }
-        //GenerateWorld();
     }
+
     public bool TileIsWall(Vector3Int tilePos)
     {
         // Convert from tile position to Map array indices

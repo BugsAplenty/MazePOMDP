@@ -13,6 +13,11 @@ public class GameManager : Singleton<GameManager>
          * on top of that, an additional function must be built, a world destroyer.
          * and consider when is it triggered. On restart is obvious, anywhere else?
          */
+        StartGame();
+    }
+
+    private void StartGame()
+    {
         if (WorldGenerator.Instance == null)
         {
             Debug.LogError("WorldGenerator instance is not found!");
@@ -28,7 +33,7 @@ public class GameManager : Singleton<GameManager>
         }
 
         FogOfWarController.Instance.SetupOverlay(WorldGenerator.Instance.mainMap);
-        SpawnPlayer(); 
+        SpawnPlayer();
         RandomizePlayerLocation();
     }
 
