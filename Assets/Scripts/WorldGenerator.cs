@@ -5,7 +5,7 @@ using UnityEngine.Tilemaps;
 public class WorldGenerator : Singleton<WorldGenerator>
 {
 
-    public int width;
+    public int width; //min 10 max 100, both
     public int height;
     public Tilemap tilemap;
     public TileBase wallTile;
@@ -28,7 +28,7 @@ public class WorldGenerator : Singleton<WorldGenerator>
                 Map[y, x] = Random.value > 0.5f ? wallTile : floorTile;
             }
         }
-        GenerateWorld();
+        //GenerateWorld();
     }
     public bool TileIsWall(Vector3Int tilePos)
     {
@@ -267,5 +267,11 @@ public class WorldGenerator : Singleton<WorldGenerator>
     public void DestroyWorld()
     {
         tilemap.ClearAllTiles();
+    }
+
+    public void SetHightAndWidth(int newHeight, int newWidth)
+    {
+        height = newHeight;
+        width = newWidth;
     }
 }

@@ -6,6 +6,13 @@ public class GameManager : Singleton<GameManager>
     
     private void Start()
     {
+        /*
+         * This entire section needs to become its own function that will be called on when a button is pressed
+         * On top of that, first there needs to be a UI element with text and check said inputs for correctness
+         * meaning, the generation of the world must become an event
+         * on top of that, an additional function must be built, a world destroyer.
+         * and consider when is it triggered. On restart is obvious, anywhere else?
+         */
         if (WorldGenerator.Instance == null)
         {
             Debug.LogError("WorldGenerator instance is not found!");
