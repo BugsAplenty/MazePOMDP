@@ -1,6 +1,7 @@
 using UnityEngine;
 using System.Collections.Generic;
 using UnityEngine.Tilemaps;
+using TMPro;
 
 public class WorldGenerator : Singleton<WorldGenerator>
 {
@@ -18,10 +19,15 @@ public class WorldGenerator : Singleton<WorldGenerator>
     public Tilemap mainMap;
     public TileBase[,] Map;
 
+    [SerializeField] int floor; //Definition of limits for sizes
+    [SerializeField] int ceiling;
+    [SerializeField] TextMeshProUGUI newWidthString;
+    [SerializeField] TextMeshProUGUI newHeightString;
+
     private void Start()
     {
         //pull this out, should not be created at start because dimensions are not set yet!!
-        CreateBaseTileMap();
+        //CreateBaseTileMap();
         //GenerateWorld();
     }
 
@@ -276,9 +282,45 @@ public class WorldGenerator : Singleton<WorldGenerator>
         tilemap.ClearAllTiles();
     }
 
-    public void SetHightAndWidth(int newHeight, int newWidth)
+    public void SetHightAndWidth(int newWidth, int newHeight)
     {
         height = newHeight;
         width = newWidth;
+    }
+
+    public void BeginGenerationViaClick(GameObject ErrorMessage)
+    {
+        //Hardcoding the height and width for the purpose of testing restarts/new game
+        int newHeight = 20;
+        int newWidth = 40;
+        //bool result_one = int.TryParse(newWidthString.text, System.Globalization.NumberStyles.Float, System.Globalization.CultureInfo.InvariantCulture, out newWidth);
+        //bool result_two = int.TryParse(newHeightString.text, System.Globalization.NumberStyles.Float, System.Globalization.CultureInfo.InvariantCulture, out newHeight);
+        //Debug.Log(newHeightString.text);
+        //if (!result_one || !result_two)
+        //{
+        //    Debug.Log(newWidthString.text + " Width " + newHeightString.text + " Height, Fumbled the parse");
+        //    Debug.Log(newWidth + " width " + newHeight + " height, fumbled the prase");
+        //    ErrorMessage.SetActive(true);
+        //    return;
+        //    //trigger Error message and return
+
+        //}
+        //Debug.Log(newWidth + " width " + newHeight + " height, Fumbled.. something");
+        //if (TestLimits(newWidth) || TestLimits(newHeight))
+        //{
+        //    Debug.Log(newWidth + " width " + newHeight + " height, fumbled the limit");
+        //    ErrorMessage.SetActive(true);
+        //    return;
+        //    //Trigger error message and return
+        //}
+
+        SetHightAndWidth(newWidth, newHeight);
+        CreateBaseTileMap();
+        GameManager.Instance.StartGame();
+    }
+    
+    private bool TestLimits(int numberToTest)
+    {
+        return (numberToTest >= floor && numberToTest <= ceiling);
     }
 }

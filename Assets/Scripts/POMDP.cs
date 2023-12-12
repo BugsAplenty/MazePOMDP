@@ -20,6 +20,11 @@ public class Pomdp : Singleton<Pomdp>
             }
         }
         _beliefTexture.Apply();
+        
+    }
+
+    public void AddPlayerToPOMDP()
+    {
         PlayerController.Instance.PlayerMoved += PlayerController_PlayerMoved;
     }
 

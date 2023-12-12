@@ -2,8 +2,10 @@ using UnityEngine;
 
 public class GameManager : Singleton<GameManager>
 {
+    [SerializeField] PlayerCameraManager playerCameraManager;
     public GameObject player;
-    
+    private bool isGenerated = false;
+
     private void Start()
     {
         /*
@@ -13,34 +15,43 @@ public class GameManager : Singleton<GameManager>
          * on top of that, an additional function must be built, a world destroyer.
          * and consider when is it triggered. On restart is obvious, anywhere else?
          */
-        StartGame();
+        //StartGame();
     }
 
-    private void StartGame()
+    public void StartGame()
     {
-        if (WorldGenerator.Instance == null)
+        if (!isGenerated)
         {
-            Debug.LogError("WorldGenerator instance is not found!");
-            return;
+            if (WorldGenerator.Instance == null)
+            {
+                Debug.LogError("WorldGenerator instance is not found!");
+                return;
+            }
+
+            WorldGenerator.Instance.GenerateWorld();
+
+            if (FogOfWarController.Instance == null)
+            {
+                Debug.LogError("FogOfWarController instance is not found!");
+                return;
+            }
+
+            FogOfWarController.Instance.SetupOverlay(WorldGenerator.Instance.mainMap);
+            SpawnPlayer();
+            RandomizePlayerLocation();
+            isGenerated = true;
         }
-
-        WorldGenerator.Instance.GenerateWorld();
-
-        if (FogOfWarController.Instance == null)
+        else
         {
-            Debug.LogError("FogOfWarController instance is not found!");
-            return;
+            Restart();
         }
-
-        FogOfWarController.Instance.SetupOverlay(WorldGenerator.Instance.mainMap);
-        SpawnPlayer();
-        RandomizePlayerLocation();
     }
 
+    //Problem with RESTART, currently breaks, learn why
     public void Restart()
     {
         // Destroy the player
-        Destroy(player);
+        //Destroy(player);
         // Destroy the world
         WorldGenerator.Instance.DestroyWorld();
         // Generate a new world
@@ -50,7 +61,7 @@ public class GameManager : Singleton<GameManager>
         // Setup the fog of war overlay
         FogOfWarController.Instance.SetupOverlay(WorldGenerator.Instance.mainMap);
         // Spawn the player
-        SpawnPlayer();
+        //SpawnPlayer();
         // Randomize the player location
         RandomizePlayerLocation();
     }
@@ -60,6 +71,11 @@ public class GameManager : Singleton<GameManager>
         var spawnCell = Vector3Int.FloorToInt(WorldGenerator.Instance.GetRandomPosition());
         var spawnPosition = WorldGenerator.Instance.mainMap.GetCellCenterWorld(spawnCell);
         Instantiate(player, spawnPosition, Quaternion.identity);
+        PlayerController.Instance.OnSpawn();
+        playerCameraManager.SetFollowCamera();
+        Pomdp.Instance.AddPlayerToPOMDP();
+
+
     }
 
     private void RandomizePlayerLocation()

@@ -14,20 +14,27 @@ public class PlayerController : Singleton<PlayerController>
     private Rigidbody2D _rb;
     public Vector3Int currentCellPosition;
     private bool _isMoving;
+    private bool isPlayable;
 
     private void Start()
+    {
+        //OnSpawn();
+    }
+
+    public void OnSpawn()
     {
         _rb = GetComponent<Rigidbody2D>();
         _rb.gravityScale = 0f;
         var position = transform.position;
         currentCellPosition = WorldGenerator.Instance.tilemap.WorldToCell(position);
         FogOfWarController.Instance.ClearArea(position, clearRadius);
+        isPlayable = false;
     }
 
     private void Update()
     {
         // If the player is currently moving, we don't want to start another move
-        if (_isMoving)
+        if (_isMoving || !isPlayable)
             return;
         
         // Get user input
@@ -85,4 +92,8 @@ public class PlayerController : Singleton<PlayerController>
         PlayerMoved?.Invoke(this, e);
     }
 
+    public void TogglePlayable()
+    {
+        isPlayable = !isPlayable;
+    }
 }

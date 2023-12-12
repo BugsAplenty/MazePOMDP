@@ -43,7 +43,9 @@ public class WorldMapController : Singleton<WorldMapController>
         // Set raw image filter mode to point
         rawImage.texture.filterMode = FilterMode.Point;
         // Release the RenderTexture as it is no longer needed
-        RenderTexture.ReleaseTemporary(_renderTexture);
+        //Commented out the release due to it freezing the application. For some reason, it says it doesnt have a texture TO release, probably a race condition
+        //Consider either putting this as a conditional, as in if it has a texture, release it.
+        //RenderTexture.ReleaseTemporary(_renderTexture);
     }
 
     private static Texture2D ModifyRenderTexture(RenderTexture source)
